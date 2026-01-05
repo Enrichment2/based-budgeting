@@ -10,8 +10,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Based Budget">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -727,6 +727,7 @@
     const defaultData = {
       initialized: false,
       checking: 0,
+      originalSpendable: 0, // The original amount available for spending (doesn't change with expenses)
       paycheck: 0,
       paycheckDate: null,
       nextPayday: null,
@@ -911,35 +912,43 @@
       const nextPayday = new Date(appData.nextPayday);
       const weeks = getWeeksBetween(paycheckDate, nextPayday);
       
-      // Calculate afterspend based on whether we have a paycheck or mid-month setup
-      let afterspend;
+      if (weeks.length === 0) return [];
+      
+      // Calculate base spendable amount (before any expenses)
+      let baseSpendable;
       
       if (appData.paycheck > 0) {
         // Fresh paycheck flow: calculate from paycheck
-        afterspend = appData.paycheck;
+        baseSpendable = appData.paycheck;
         
         // Subtract savings
         appData.savingsCategories.forEach(cat => {
-          afterspend -= (cat.percentage / 100) * appData.paycheck;
+          baseSpendable -= (cat.percentage / 100) * appData.paycheck;
         });
         
         // Subtract payments
         appData.payments.forEach(payment => {
-          afterspend -= payment.amount;
+          baseSpendable -= payment.amount;
         });
         
         // Subtract emergency buffer
-        afterspend -= appData.emergencyBuffer;
+        baseSpendable -= appData.emergencyBuffer;
       } else {
-        // Mid-month flow: checking IS the spendable amount
-        afterspend = appData.checking - appData.emergencyBuffer;
+        // Mid-month flow: use originalSpendable (what user entered at setup)
+        baseSpendable = (appData.originalSpendable || appData.checking) - appData.emergencyBuffer;
       }
       
-      // Calculate base weekly budget
-      const baseWeeklyBudget = afterspend / weeks.length;
+      // Get total extra income (adds to spendable pool)
+      const totalExtraIncome = appData.extraIncome.reduce((sum, e) => sum + e.amount, 0);
       
-      // Get current expenses per week
-      const expensesByWeek = weeks.map((week, index) => {
+      // Total available = base + extra income
+      const totalAvailable = baseSpendable + totalExtraIncome;
+      
+      // Calculate base weekly budget
+      const baseWeeklyBudget = totalAvailable / weeks.length;
+      
+      // Get expenses per week (only non-savings expenses)
+      const expensesByWeek = weeks.map((week) => {
         return appData.expenses
           .filter(e => {
             const expDate = new Date(e.date);
@@ -948,59 +957,38 @@
           .reduce((sum, e) => sum + e.amount, 0);
       });
       
-      // Get extra income per week
-      const extraByWeek = weeks.map((week, index) => {
-        return appData.extraIncome
-          .filter(e => {
-            const incDate = new Date(e.date);
-            return incDate >= week.start && incDate <= week.end;
-          })
-          .reduce((sum, e) => sum + e.amount, 0);
-      });
+      // Get total spent so far
+      const totalSpent = expensesByWeek.reduce((sum, e) => sum + e, 0);
       
-      // Calculate adjusted budgets
+      // Calculate what's left to distribute over remaining weeks
       const currentWeekIndex = getCurrentWeekIndex();
       const remainingWeeks = weeks.length - currentWeekIndex;
       
-      // Calculate total overspend from past weeks
-      let totalOverspend = 0;
-      let totalExtraIncome = 0;
+      // Amount remaining = total available - everything spent so far
+      const amountRemaining = totalAvailable - totalSpent;
       
-      for (let i = 0; i < weeks.length; i++) {
-        const weekBudget = baseWeeklyBudget;
-        const weekSpent = expensesByWeek[i];
-        const weekExtra = extraByWeek[i];
-        
-        totalExtraIncome += weekExtra;
-        
-        if (i < currentWeekIndex) {
-          const overspend = weekSpent - (weekBudget + weekExtra);
-          if (overspend > 0) {
-            totalOverspend += overspend;
-          }
-        }
-      }
-      
-      // Distribute overspend and extra income across remaining weeks
-      const adjustmentPerWeek = remainingWeeks > 0 ? 
-        (totalExtraIncome - totalOverspend) / remainingWeeks : 0;
+      // Budget for current + future weeks (evenly distributed)
+      const adjustedWeeklyBudget = remainingWeeks > 0 ? amountRemaining / remainingWeeks : 0;
       
       return weeks.map((week, index) => {
-        let budget = baseWeeklyBudget;
+        let budget;
         
-        if (index >= currentWeekIndex) {
-          budget += adjustmentPerWeek;
+        if (index < currentWeekIndex) {
+          // Past weeks: show what the budget WAS (base weekly)
+          budget = baseWeeklyBudget;
+        } else {
+          // Current and future weeks: show adjusted budget
+          budget = adjustedWeeklyBudget;
         }
         
-        // Add any extra income received this specific week
-        budget += extraByWeek[index];
+        const spent = expensesByWeek[index];
         
         return {
           start: week.start,
           end: week.end,
           budget: Math.max(0, budget),
-          spent: expensesByWeek[index],
-          remaining: Math.max(0, budget) - expensesByWeek[index]
+          spent: spent,
+          remaining: budget - spent
         };
       });
     }
@@ -1539,6 +1527,7 @@
           }
           
           appData.checking = spendable;
+          appData.originalSpendable = spendable; // Store original for budget calculations
           appData.nextPayday = new Date(nextPayday + 'T23:59:59').toISOString();
           appData.paycheckDate = new Date().toISOString();
           saveData(appData);
@@ -1651,6 +1640,7 @@
       const totalSavings = appData.savingsCategories.reduce((sum, cat) => sum + ((cat.percentage || 0) / 100 * paycheck), 0);
       const totalPayments = appData.payments.reduce((sum, p) => sum + p.amount, 0);
       appData.checking = paycheck - totalSavings - totalPayments;
+      appData.originalSpendable = appData.checking; // Store for budget calculations
       
       // Subtract payments from linked loans
       appData.payments.forEach(payment => {
@@ -1992,6 +1982,7 @@
       }, 0);
       const totalPayments = appData.payments.reduce((sum, p) => sum + p.amount, 0);
       appData.checking = paycheck - totalSavings - totalPayments;
+      appData.originalSpendable = appData.checking; // Store for budget calculations
       
       saveData(appData);
       
@@ -2684,7 +2675,7 @@
         fromSavings: null
       });
       
-      appData.checking -= amount;
+      // Don't modify checking here - budget calculations use expense tracking
       
       saveData(appData);
       closeModal();
@@ -2705,7 +2696,7 @@
         date: new Date().toISOString()
       });
       
-      appData.checking += amount;
+      // Don't modify checking here - budget calculations use extraIncome tracking
       
       saveData(appData);
       closeModal();
@@ -2777,7 +2768,7 @@
     // ==================== PWA SERVICE WORKER ====================
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('sw.js')
           .then(registration => {
             console.log('SW registered:', registration);
           })

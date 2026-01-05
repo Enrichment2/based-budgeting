@@ -1,9 +1,9 @@
-const CACHE_NAME = 'based-budgeting-v3';
+const CACHE_NAME = 'based-budgeting-v4';
 const urlsToCache = [
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  'icon-192.png',
+  'icon-512.png'
 ];
 
 // Install service worker and cache files
