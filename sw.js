@@ -1,4 +1,4 @@
-const CACHE_NAME = 'based-budgeting-v4';
+const CACHE_NAME = 'based-budgeting-v5';
 const urlsToCache = [
   './index.html',
   './manifest.json',

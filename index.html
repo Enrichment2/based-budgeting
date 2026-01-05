@@ -13,6 +13,9 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   
+  <!-- PDF Export Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
@@ -2441,6 +2444,14 @@
         </div>
         
         <div class="card">
+          <h2>📄 Export Data</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+            Export your monthly expenses and summary to a PDF
+          </p>
+          <button class="btn btn-primary btn-block" onclick="exportToPDF()">Export to PDF</button>
+        </div>
+        
+        <div class="card">
           <h2>⚠️ Danger Zone</h2>
           <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
             Reset all data and start fresh
@@ -2514,6 +2525,200 @@
       appData.emergencyBuffer = buffer;
       saveData(appData);
       alert('Emergency buffer updated!');
+    }
+
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 20;
+      const lineHeight = 7;
+      const margin = 20;
+      
+      // Helper functions
+      function addTitle(text) {
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text(text, pageWidth / 2, y, { align: 'center' });
+        y += lineHeight * 2;
+      }
+      
+      function addSectionHeader(text) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(text, margin, y);
+        y += lineHeight * 1.5;
+      }
+      
+      function addRow(label, value, indent = 0) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(label, margin + indent, y);
+        doc.text(value, pageWidth - margin, y, { align: 'right' });
+        y += lineHeight;
+      }
+      
+      function addText(text) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(text, margin, y);
+        y += lineHeight;
+      }
+      
+      function checkPageBreak() {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+      
+      // Title
+      addTitle('💰 Based Budgeting Report');
+      
+      // Date range
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      const startDate = appData.paycheckDate ? formatDate(appData.paycheckDate) : 'N/A';
+      const endDate = appData.nextPayday ? formatDate(appData.nextPayday) : 'N/A';
+      doc.text(`Period: ${startDate} - ${endDate}`, pageWidth / 2, y, { align: 'center' });
+      y += lineHeight;
+      doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, y, { align: 'center' });
+      y += lineHeight * 2;
+      
+      // Budget Summary
+      addSectionHeader('Budget Summary');
+      const weeklyBudgets = calculateWeeklyBudgets();
+      const totalBudget = weeklyBudgets.reduce((sum, w) => sum + w.budget, 0);
+      const totalSpent = weeklyBudgets.reduce((sum, w) => sum + w.spent, 0);
+      const totalRemaining = totalBudget - totalSpent;
+      
+      if (appData.paycheck > 0) {
+        addRow('Paycheck', formatCurrency(appData.paycheck));
+      }
+      addRow('Total Budget', formatCurrency(totalBudget + appData.emergencyBuffer));
+      addRow('Emergency Buffer', formatCurrency(appData.emergencyBuffer));
+      addRow('Spendable Amount', formatCurrency(totalBudget));
+      addRow('Total Spent', formatCurrency(totalSpent));
+      addRow('Remaining', formatCurrency(totalRemaining));
+      y += lineHeight;
+      
+      // Weekly Breakdown
+      checkPageBreak();
+      addSectionHeader('Weekly Breakdown');
+      weeklyBudgets.forEach((week, i) => {
+        const weekLabel = `Week ${i + 1} (${formatDate(week.start)} - ${formatDate(week.end)})`;
+        addRow(weekLabel, `Budget: ${formatCurrency(week.budget)} | Spent: ${formatCurrency(week.spent)}`);
+      });
+      y += lineHeight;
+      
+      // Expenses by Category
+      checkPageBreak();
+      addSectionHeader('Expenses by Category');
+      const expensesByCategory = {};
+      appData.expenses.filter(e => !e.fromSavings).forEach(expense => {
+        if (!expensesByCategory[expense.category]) {
+          expensesByCategory[expense.category] = 0;
+        }
+        expensesByCategory[expense.category] += expense.amount;
+      });
+      
+      Object.entries(expensesByCategory)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([category, total]) => {
+          addRow(category, formatCurrency(total));
+        });
+      
+      if (Object.keys(expensesByCategory).length === 0) {
+        addText('No expenses recorded');
+      }
+      y += lineHeight;
+      
+      // All Expenses
+      checkPageBreak();
+      addSectionHeader('All Expenses');
+      const sortedExpenses = [...appData.expenses]
+        .filter(e => !e.fromSavings)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      if (sortedExpenses.length === 0) {
+        addText('No expenses recorded');
+      } else {
+        sortedExpenses.forEach(expense => {
+          checkPageBreak();
+          addRow(
+            `${formatDate(expense.date)} - ${expense.name}`,
+            formatCurrency(expense.amount)
+          );
+          doc.setFontSize(8);
+          doc.setTextColor(128);
+          doc.text(`   ${expense.category}`, margin, y);
+          doc.setTextColor(0);
+          y += lineHeight * 0.8;
+        });
+      }
+      y += lineHeight;
+      
+      // Savings Purchases
+      const savingsExpenses = appData.expenses.filter(e => e.fromSavings);
+      if (savingsExpenses.length > 0) {
+        checkPageBreak();
+        addSectionHeader('Purchases from Savings');
+        savingsExpenses.forEach(expense => {
+          addRow(
+            `${formatDate(expense.date)} - ${expense.name}`,
+            formatCurrency(expense.amount)
+          );
+          doc.setFontSize(8);
+          doc.setTextColor(128);
+          doc.text(`   From: ${expense.fromSavings}`, margin, y);
+          doc.setTextColor(0);
+          y += lineHeight * 0.8;
+        });
+        y += lineHeight;
+      }
+      
+      // Extra Income
+      if (appData.extraIncome.length > 0) {
+        checkPageBreak();
+        addSectionHeader('Extra Income');
+        appData.extraIncome.forEach(income => {
+          addRow(
+            `${formatDate(income.date)} - ${income.name}`,
+            formatCurrency(income.amount)
+          );
+        });
+        y += lineHeight;
+      }
+      
+      // Savings Summary
+      if (appData.savingsCategories.length > 0) {
+        checkPageBreak();
+        addSectionHeader('Savings Balances');
+        appData.savingsCategories.forEach(cat => {
+          addRow(cat.name, formatCurrency(cat.balance));
+        });
+        const totalSavings = appData.savingsCategories.reduce((sum, c) => sum + c.balance, 0);
+        doc.setFont('helvetica', 'bold');
+        addRow('Total Savings', formatCurrency(totalSavings));
+        y += lineHeight;
+      }
+      
+      // Loans Summary
+      if (appData.loans.length > 0) {
+        checkPageBreak();
+        addSectionHeader('Loan Balances');
+        appData.loans.forEach(loan => {
+          addRow(loan.name, formatCurrency(loan.balance));
+        });
+        const totalLoans = appData.loans.reduce((sum, l) => sum + l.balance, 0);
+        doc.setFont('helvetica', 'bold');
+        addRow('Total Owed', formatCurrency(totalLoans));
+      }
+      
+      // Save the PDF
+      const filename = `budget-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(filename);
     }
 
     function resetAllData() {
