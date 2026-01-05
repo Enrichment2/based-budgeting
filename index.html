@@ -77,6 +77,10 @@
       padding: 24px 20px;
     }
 
+    .container.has-nav {
+      padding-bottom: 100px;
+    }
+
     .header {
       text-align: center;
       margin-bottom: 32px;
@@ -131,6 +135,10 @@
 
     .budget-amount.over {
       color: var(--danger);
+    }
+
+    .budget-amount.warning {
+      color: var(--warning);
     }
 
     .budget-label {
@@ -211,7 +219,7 @@
     }
 
     .btn-primary:hover {
-      background: #154d3c;
+      opacity: 0.9;
     }
 
     .btn-secondary {
@@ -299,51 +307,26 @@
       color-scheme: light;
     }
 
-    .input-prefix {
-      position: relative;
+    .inline-form {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
     }
 
-    .input-prefix::before {
-      content: '$';
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-family: 'Fraunces', serif;
-      font-size: 1.25rem;
-      color: var(--text-muted);
-    }
-
-    .input-prefix input {
-      padding-left: 36px;
-    }
-
-    .input-suffix {
-      position: relative;
-    }
-
-    .input-suffix::after {
-      content: '%';
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-family: 'DM Mono', monospace;
-      color: var(--text-muted);
-    }
-
-    .input-suffix input {
-      padding-right: 36px;
+    .inline-form input {
+      flex: 1;
     }
 
     .list-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 14px 16px;
-      background: var(--bg);
-      border-radius: 8px;
-      margin-bottom: 8px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .list-item:last-child {
+      border-bottom: none;
     }
 
     .list-item-info {
@@ -352,7 +335,6 @@
 
     .list-item-name {
       font-weight: 500;
-      margin-bottom: 2px;
     }
 
     .list-item-meta {
@@ -363,141 +345,107 @@
     .list-item-amount {
       font-family: 'Fraunces', serif;
       font-weight: 600;
-      font-size: 1.1rem;
+      margin-right: 12px;
     }
 
-    .list-item-actions {
+    /* Payment toggle styles */
+    .payment-item {
       display: flex;
-      gap: 8px;
-      margin-left: 12px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
     }
 
-    .list-item-actions button {
-      padding: 6px 10px;
-      font-size: 0.75rem;
+    .payment-item:last-child {
+      border-bottom: none;
     }
 
-    .expense-category {
-      display: inline-block;
-      padding: 2px 8px;
-      background: var(--accent-light);
-      color: var(--accent);
-      border-radius: 4px;
-      font-size: 0.75rem;
-    }
-
-    .alert {
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-    }
-
-    .alert-warning {
-      background: var(--warning-light);
-      color: var(--warning);
-      border: 1px solid var(--warning);
-    }
-
-    .alert-danger {
-      background: var(--danger-light);
-      color: var(--danger);
-      border: 1px solid var(--danger);
-    }
-
-    .alert-success {
-      background: var(--accent-light);
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
-
-    .tabs {
+    .payment-toggle {
       display: flex;
-      gap: 4px;
-      background: var(--bg);
-      padding: 4px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      align-items: center;
+      gap: 12px;
     }
 
-    .tab {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      border: none;
-      background: transparent;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.85rem;
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      background: var(--border);
+      border-radius: 14px;
       cursor: pointer;
-      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch.active {
+      background: var(--accent);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(22px);
+    }
+
+    .toggle-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .toggle-label.paid {
+      color: var(--accent);
+    }
+
+    .nav-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .nav-bottom button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 8px;
       transition: all 0.2s ease;
     }
 
-    .tab.active {
-      background: var(--bg-card);
-      box-shadow: var(--shadow);
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .step-indicator {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-
-    .step-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--border);
-    }
-
-    .step-dot.active {
-      background: var(--accent);
-    }
-
-    .step-dot.completed {
-      background: var(--accent);
-      opacity: 0.5;
-    }
-
-    .summary-box {
-      background: var(--accent-light);
-      border-radius: 8px;
-      padding: 16px;
-      margin: 16px 0;
-    }
-
-    .summary-box h4 {
-      font-size: 0.85rem;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-
-    .summary-box .amount {
-      font-family: 'Fraunces', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
+    .nav-bottom button.active {
       color: var(--accent);
     }
 
-    .week-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
+    .nav-bottom button svg {
+      width: 24px;
+      height: 24px;
     }
 
-    .week-nav button {
-      padding: 8px 12px;
-    }
-
-    .week-nav .week-label {
-      font-weight: 500;
+    .nav-bottom.hidden {
+      display: none;
     }
 
     .modal-overlay {
@@ -506,7 +454,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.7);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -520,7 +468,7 @@
       padding: 24px;
       width: 100%;
       max-width: 400px;
-      max-height: 80vh;
+      max-height: 90vh;
       overflow-y: auto;
     }
 
@@ -528,103 +476,82 @@
       margin-bottom: 20px;
     }
 
-    .checkbox-item {
+    .setup-progress {
       display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .setup-progress .step {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .setup-progress .step.active {
+      background: var(--accent);
+    }
+
+    .week-card {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .week-card.current {
+      border: 2px solid var(--accent);
+    }
+
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .week-title {
+      font-weight: 500;
+    }
+
+    .week-dates {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 12px;
       padding: 12px;
       background: var(--bg);
       border-radius: 8px;
       margin-bottom: 8px;
-      cursor: pointer;
     }
 
-    .checkbox-item input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      accent-color: var(--accent);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
-    }
-
-    .empty-state p {
-      margin-bottom: 16px;
-    }
-
-    .nav-bottom {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-around;
-    }
-
-    .nav-bottom button {
-      flex: 1;
-      padding: 12px;
-      background: transparent;
-      border: none;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .nav-bottom button.active {
-      color: var(--accent);
-    }
-
-    .nav-bottom button svg {
-      width: 24px;
-      height: 24px;
-    }
-
-    .container.has-nav {
-      padding-bottom: 100px;
-    }
-
-    .inline-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .inline-form input {
-      width: 100%;
-    }
-
-    .inline-form-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .inline-form-row .input-prefix {
+    .expense-info {
       flex: 1;
     }
 
-    .inline-form-row button {
-      flex-shrink: 0;
-      height: 48px;
+    .expense-name {
+      font-weight: 500;
+    }
+
+    .expense-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .expense-amount {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      margin-right: 12px;
     }
 
     .savings-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
-      margin-bottom: 16px;
     }
 
     .savings-card {
@@ -676,6 +603,26 @@
       color: var(--text-muted);
     }
 
+    .summary-box {
+      background: var(--accent-light);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .summary-box .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .summary-box .summary-total {
+      border-top: 2px solid var(--accent);
+      margin-top: 8px;
+      padding-top: 12px;
+      font-weight: 600;
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 16px;
@@ -701,7 +648,7 @@
 </head>
 <body>
   <div class="container has-nav" id="app">
-    <!-- Content will be rendered by JavaScript -->
+    <!-- Content rendered by JavaScript -->
   </div>
 
   <nav class="nav-bottom hidden" id="nav">
@@ -725,22 +672,27 @@
 
   <script>
     // ==================== DATA MANAGEMENT ====================
-    const STORAGE_KEY = 'budgetAppData';
+    const STORAGE_KEY = 'basedBudgetV2';
     
     const defaultData = {
       initialized: false,
-      checking: 0,
-      originalSpendable: 0, // The original amount available for spending (doesn't change with expenses)
+      // Money
       paycheck: 0,
+      checking: 0,
+      // Dates
       paycheckDate: null,
       nextPayday: null,
+      // Savings categories with balances
       savingsCategories: [],
+      // Monthly payments (subscriptions + loan payments)
+      monthlyPayments: [],
+      // Loans (just for tracking balances)
       loans: [],
-      payments: [],
+      // Expenses and income
       expenses: [],
-      expenseCategories: ['Dining Out', 'Groceries', 'Gas', 'Technology', 'Car', 'Entertainment', 'Shopping', 'Other'],
-      weeklyBudgets: [],
       extraIncome: [],
+      expenseCategories: ['Dining Out', 'Groceries', 'Gas', 'Technology', 'Car', 'Entertainment', 'Shopping', 'Merch', 'Other'],
+      // Settings
       emergencyBuffer: 100
     };
 
@@ -758,43 +710,33 @@
 
     let appData = loadData();
 
+    // ==================== FORMATTING ====================
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(amount);
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
     // ==================== US FEDERAL HOLIDAYS ====================
     function getUSHolidays(year) {
       const holidays = [];
-      
-      // New Year's Day - Jan 1
-      holidays.push(new Date(year, 0, 1));
-      
-      // MLK Day - 3rd Monday of January
-      holidays.push(getNthWeekdayOfMonth(year, 0, 1, 3));
-      
-      // Presidents Day - 3rd Monday of February
-      holidays.push(getNthWeekdayOfMonth(year, 1, 1, 3));
-      
-      // Memorial Day - Last Monday of May
-      holidays.push(getLastWeekdayOfMonth(year, 4, 1));
-      
-      // Juneteenth - June 19
-      holidays.push(new Date(year, 5, 19));
-      
-      // Independence Day - July 4
-      holidays.push(new Date(year, 6, 4));
-      
-      // Labor Day - 1st Monday of September
-      holidays.push(getNthWeekdayOfMonth(year, 8, 1, 1));
-      
-      // Columbus Day - 2nd Monday of October
-      holidays.push(getNthWeekdayOfMonth(year, 9, 1, 2));
-      
-      // Veterans Day - November 11
-      holidays.push(new Date(year, 10, 11));
-      
-      // Thanksgiving - 4th Thursday of November
-      holidays.push(getNthWeekdayOfMonth(year, 10, 4, 4));
-      
-      // Christmas - December 25
-      holidays.push(new Date(year, 11, 25));
-      
+      holidays.push(new Date(year, 0, 1)); // New Year's Day
+      holidays.push(getNthWeekdayOfMonth(year, 0, 1, 3)); // MLK Day
+      holidays.push(getNthWeekdayOfMonth(year, 1, 1, 3)); // Presidents Day
+      holidays.push(getLastWeekdayOfMonth(year, 4, 1)); // Memorial Day
+      holidays.push(new Date(year, 5, 19)); // Juneteenth
+      holidays.push(new Date(year, 6, 4)); // Independence Day
+      holidays.push(getNthWeekdayOfMonth(year, 8, 1, 1)); // Labor Day
+      holidays.push(getNthWeekdayOfMonth(year, 9, 1, 2)); // Columbus Day
+      holidays.push(new Date(year, 10, 11)); // Veterans Day
+      holidays.push(getNthWeekdayOfMonth(year, 10, 4, 4)); // Thanksgiving
+      holidays.push(new Date(year, 11, 25)); // Christmas
       return holidays;
     }
 
@@ -862,7 +804,7 @@
     function getWeekStart(date) {
       const d = new Date(date);
       const day = d.getDay();
-      const diff = day === 0 ? -6 : 1 - day;
+      const diff = day === 0 ? -6 : 1 - day; // Monday = start
       d.setDate(d.getDate() + diff);
       d.setHours(0, 0, 0, 0);
       return d;
@@ -908,6 +850,23 @@
     }
 
     // ==================== BUDGET CALCULATIONS ====================
+    function getUnpaidPayments() {
+      return appData.monthlyPayments.filter(p => !p.paid);
+    }
+
+    function getTotalMonthlyPayments() {
+      return appData.monthlyPayments.reduce((sum, p) => sum + p.amount, 0);
+    }
+
+    function getUnpaidTotal() {
+      return getUnpaidPayments().reduce((sum, p) => sum + p.amount, 0);
+    }
+
+    function calculateSpendable() {
+      // Checking - unpaid bills - emergency buffer = spendable
+      return appData.checking - getUnpaidTotal() - appData.emergencyBuffer;
+    }
+
     function calculateWeeklyBudgets() {
       if (!appData.paycheckDate || !appData.nextPayday) return [];
       
@@ -917,40 +876,14 @@
       
       if (weeks.length === 0) return [];
       
-      // Calculate base spendable amount (before any expenses)
-      let baseSpendable;
+      // Base spendable: checking - unpaid bills - buffer
+      const baseSpendable = calculateSpendable();
       
-      if (appData.paycheck > 0) {
-        // Fresh paycheck flow: calculate from paycheck
-        baseSpendable = appData.paycheck;
-        
-        // Subtract savings
-        appData.savingsCategories.forEach(cat => {
-          baseSpendable -= (cat.percentage / 100) * appData.paycheck;
-        });
-        
-        // Subtract payments
-        appData.payments.forEach(payment => {
-          baseSpendable -= payment.amount;
-        });
-        
-        // Subtract emergency buffer
-        baseSpendable -= appData.emergencyBuffer;
-      } else {
-        // Mid-month flow: use originalSpendable (what user entered at setup)
-        baseSpendable = (appData.originalSpendable || appData.checking) - appData.emergencyBuffer;
-      }
-      
-      // Get total extra income (adds to spendable pool)
+      // Add extra income
       const totalExtraIncome = appData.extraIncome.reduce((sum, e) => sum + e.amount, 0);
-      
-      // Total available = base + extra income
       const totalAvailable = baseSpendable + totalExtraIncome;
       
-      // Calculate base weekly budget
-      const baseWeeklyBudget = totalAvailable / weeks.length;
-      
-      // Get expenses per week (only non-savings expenses)
+      // Get expenses per week (non-savings only)
       const expensesByWeek = weeks.map((week) => {
         return appData.expenses
           .filter(e => {
@@ -960,27 +893,28 @@
           .reduce((sum, e) => sum + e.amount, 0);
       });
       
-      // Get total spent so far
+      // Total spent so far
       const totalSpent = expensesByWeek.reduce((sum, e) => sum + e, 0);
       
-      // Calculate what's left to distribute over remaining weeks
+      // Remaining = available - spent
+      const amountRemaining = totalAvailable - totalSpent;
+      
+      // Current week and remaining weeks
       const currentWeekIndex = getCurrentWeekIndex();
       const remainingWeeks = weeks.length - currentWeekIndex;
       
-      // Amount remaining = total available - everything spent so far
-      const amountRemaining = totalAvailable - totalSpent;
-      
-      // Budget for current + future weeks (evenly distributed)
+      // Adjusted budget for remaining weeks
       const adjustedWeeklyBudget = remainingWeeks > 0 ? amountRemaining / remainingWeeks : 0;
+      
+      // Base weekly (for past weeks display)
+      const baseWeeklyBudget = totalAvailable / weeks.length;
       
       return weeks.map((week, index) => {
         let budget;
         
         if (index < currentWeekIndex) {
-          // Past weeks: show what the budget WAS (base weekly)
           budget = baseWeeklyBudget;
         } else {
-          // Current and future weeks: show adjusted budget
           budget = adjustedWeeklyBudget;
         }
         
@@ -989,7 +923,7 @@
         return {
           start: week.start,
           end: week.end,
-          budget: Math.max(0, budget),
+          budget: budget,
           spent: spent,
           remaining: budget - spent
         };
@@ -999,15 +933,20 @@
     // ==================== RENDERING ====================
     const app = document.getElementById('app');
     const nav = document.getElementById('nav');
+
     let currentView = 'dashboard';
     let modalOpen = null;
+    let setupStep = 1;
 
     function render() {
+      // Check for payday
+      if (appData.initialized && isPayday() && !appData.paydayHandled) {
+        renderPaydayFlow();
+        return;
+      }
+
       if (!appData.initialized) {
         renderSetup();
-        nav.classList.add('hidden');
-      } else if (shouldShowPaydayFlow()) {
-        renderPaydayFlow();
         nav.classList.add('hidden');
       } else {
         nav.classList.remove('hidden');
@@ -1028,20 +967,10 @@
             break;
         }
       }
-    }
 
-    function shouldShowPaydayFlow() {
-      if (!appData.paycheckDate) return true;
-      const today = new Date();
-      const nextPayday = getNextPayday();
-      const lastPaycheck = new Date(appData.paycheckDate);
-      
-      // If it's payday and we haven't logged this month's paycheck
-      if (isPayday(today) && lastPaycheck < getLastWorkdayOfMonth(today.getFullYear(), today.getMonth())) {
-        return true;
+      if (modalOpen) {
+        renderModal();
       }
-      
-      return false;
     }
 
     function updateNavActive() {
@@ -1050,98 +979,62 @@
       });
     }
 
-    function formatCurrency(amount) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-      }).format(amount);
-    }
-
-    function formatDate(date) {
-      return new Date(date).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric'
-      });
-    }
-
-    function formatDateRange(start, end) {
-      return `${formatDate(start)} - ${formatDate(end)}`;
-    }
-
     // ==================== SETUP FLOW ====================
-    let setupStep = 1;
-    let setupMode = null; // 'fresh' or 'midmonth'
-    
     function renderSetup() {
+      const totalSteps = 6;
+      const today = new Date();
+      
       let html = `
         <div class="header">
           <h1>💰 Based Budgeting</h1>
-          <p class="date">Let's set up your budget</p>
+          <p class="date">${today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-      `;
-      
-      if (setupStep === 1) {
-        // First question: fresh paycheck or mid-month?
-        html += `
-          <div class="card">
-            <h2>Where are you at?</h2>
-            <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.9rem;">
-              This helps us set up your budget correctly
-            </p>
-            
-            <button class="btn btn-secondary btn-block" style="padding: 20px; margin-bottom: 12px; text-align: left;" onclick="selectSetupMode('fresh')">
-              <div style="font-weight: 600; margin-bottom: 4px;">💵 I just got paid</div>
-              <div style="font-size: 0.85rem; color: var(--text-muted);">Fresh paycheck, haven't spent or moved any money yet</div>
-            </button>
-            
-            <button class="btn btn-secondary btn-block" style="padding: 20px; text-align: left;" onclick="selectSetupMode('midmonth')">
-              <div style="font-weight: 600; margin-bottom: 4px;">📊 I've already spent some</div>
-              <div style="font-size: 0.85rem; color: var(--text-muted);">Mid-month, already paid bills or spent money</div>
-            </button>
-          </div>
-        `;
-      } else if (setupMode === 'midmonth') {
-        html += renderMidmonthSetup();
-      } else if (setupMode === 'fresh') {
-        html += renderFreshSetup();
-      }
-      
-      app.innerHTML = html;
-    }
-    
-    function renderMidmonthSetup() {
-      const totalSteps = 4;
-      const currentStep = setupStep - 1; // since step 1 is mode selection
-      
-      let html = `
-        <div class="step-indicator">
+        
+        <div class="setup-progress">
           ${Array(totalSteps).fill(0).map((_, i) => `
-            <div class="step-dot ${i + 1 === currentStep ? 'active' : i + 1 < currentStep ? 'completed' : ''}"></div>
+            <div class="step ${i < setupStep ? 'active' : ''}"></div>
           `).join('')}
         </div>
       `;
-      
-      if (setupStep === 2) {
+
+      if (setupStep === 1) {
+        // Paycheck amount
         html += `
           <div class="card">
-            <h2>💰 Spendable Money</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              How much do you have left to spend until your next paycheck? (Don't include savings or money set aside for bills)
+            <h2>How much was your paycheck?</h2>
+            <div class="form-group">
+              <label>Paycheck Amount</label>
+              <input type="number" id="setup-paycheck" step="0.01" min="0" placeholder="0.00" value="${appData.paycheck || ''}">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="nextSetupStep()">Continue</button>
+          </div>
+        `;
+      } else if (setupStep === 2) {
+        // Savings categories
+        html += `
+          <div class="card">
+            <h2>Savings Categories</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              What are you saving for? (You can add more later)
             </p>
             
-            <div class="form-group">
-              <label>Amount left to spend</label>
-              <div class="input-prefix">
-                <input type="number" id="setup-spendable" step="0.01" min="0" 
-                  value="${appData.checking || ''}" placeholder="0.00">
+            ${appData.savingsCategories.map((cat, i) => `
+              <div class="list-item">
+                <div class="list-item-info">
+                  <div class="list-item-name">${cat.name}</div>
+                  <div class="list-item-meta">${cat.percentage}% of paycheck</div>
+                </div>
+                <button class="btn btn-danger" onclick="removeSavingsCategory(${i})">✕</button>
               </div>
-            </div>
+            `).join('')}
             
-            <div class="form-group">
-              <label>When is your next payday?</label>
-              <input type="date" id="setup-next-payday" value="${appData.nextPayday ? appData.nextPayday.split('T')[0] : ''}">
+            <div class="form-group" style="margin-top: 16px;">
+              <input type="text" id="new-savings-name" placeholder="Category name (e.g., Car Repairs)">
             </div>
+            <div class="form-group">
+              <input type="number" id="new-savings-percent" placeholder="Percentage of paycheck" min="0" max="100">
+            </div>
+            <button class="btn btn-secondary btn-block" onclick="addSavingsCategory()">+ Add Category</button>
             
             <div class="btn-group">
               <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
@@ -1150,34 +1043,32 @@
           </div>
         `;
       } else if (setupStep === 3) {
+        // Monthly payments
         html += `
           <div class="card">
-            <h2>🏦 Savings Categories</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              Set up categories for future paychecks (optional - you can skip this)
+            <h2>Monthly Payments</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              Subscriptions, loan payments, bills, etc.
             </p>
             
-            <div id="savings-list">
-              ${appData.savingsCategories.map((cat, i) => `
-                <div class="list-item">
-                  <div class="list-item-info">
-                    <div class="list-item-name">${cat.name}</div>
-                    <div class="list-item-meta">Balance: ${formatCurrency(cat.balance)}</div>
-                  </div>
-                  <button class="btn btn-danger" onclick="removeSavingsCategory(${i})">Remove</button>
+            ${appData.monthlyPayments.map((payment, i) => `
+              <div class="list-item">
+                <div class="list-item-info">
+                  <div class="list-item-name">${payment.name}</div>
+                  <div class="list-item-meta">${payment.linkedLoan !== null ? 'Linked to loan' : ''}</div>
                 </div>
-              `).join('')}
-            </div>
-            
-            <div class="inline-form" style="margin-top: 16px;">
-              <input type="text" id="new-savings-name" placeholder="Category name">
-              <div class="inline-form-row">
-                <div class="input-prefix" style="flex: 1;">
-                  <input type="number" id="new-savings-balance" step="0.01" min="0" placeholder="Current balance">
-                </div>
-                <button class="btn btn-secondary" onclick="addSavingsCategory()">Add</button>
+                <span class="list-item-amount">${formatCurrency(payment.amount)}</span>
+                <button class="btn btn-danger" onclick="removeMonthlyPayment(${i})">✕</button>
               </div>
+            `).join('')}
+            
+            <div class="form-group" style="margin-top: 16px;">
+              <input type="text" id="new-payment-name" placeholder="Payment name (e.g., Netflix)">
             </div>
+            <div class="form-group">
+              <input type="number" id="new-payment-amount" step="0.01" min="0" placeholder="Amount">
+            </div>
+            <button class="btn btn-secondary btn-block" onclick="addMonthlyPayment()">+ Add Payment</button>
             
             <div class="btn-group">
               <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
@@ -1186,58 +1077,43 @@
           </div>
         `;
       } else if (setupStep === 4) {
+        // Loans
         html += `
           <div class="card">
-            <h2>📋 Payments & Loans</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              Set up recurring payments and loans for future paychecks (optional)
+            <h2>Loans</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              Track your loan balances (optional)
             </p>
             
-            <h3 style="margin-bottom: 12px;">Recurring Payments</h3>
-            <div id="payments-list">
-              ${appData.payments.map((payment, i) => `
-                <div class="list-item">
-                  <div class="list-item-info">
-                    <div class="list-item-name">${payment.name}</div>
-                  </div>
-                  <div class="list-item-amount">${formatCurrency(payment.amount)}</div>
-                  <button class="btn btn-danger" onclick="removeSetupPayment(${i})">Remove</button>
+            ${appData.loans.map((loan, i) => `
+              <div class="loan-card">
+                <div class="loan-header">
+                  <span class="loan-name">${loan.name}</span>
+                  <span class="loan-balance">${formatCurrency(loan.balance)}</span>
                 </div>
-              `).join('')}
-            </div>
-            
-            <div class="inline-form" style="margin-top: 12px; margin-bottom: 24px;">
-              <input type="text" id="new-payment-name" placeholder="Payment name">
-              <div class="inline-form-row">
-                <div class="input-prefix" style="flex: 1;">
-                  <input type="number" id="new-payment-amount" step="0.01" min="0" placeholder="Amount">
-                </div>
-                <button class="btn btn-secondary" onclick="addSetupPayment()">Add</button>
+                ${loan.linkedPayment !== null ? `
+                  <div class="loan-meta">Linked to: ${appData.monthlyPayments[loan.linkedPayment]?.name || 'Unknown'}</div>
+                ` : ''}
+                <button class="btn btn-danger" style="margin-top: 8px;" onclick="removeLoan(${i})">Remove</button>
               </div>
-            </div>
+            `).join('')}
             
-            <h3 style="margin-bottom: 12px;">Loans</h3>
-            <div id="loans-list">
-              ${appData.loans.map((loan, i) => `
-                <div class="list-item">
-                  <div class="list-item-info">
-                    <div class="list-item-name">${loan.name}</div>
-                  </div>
-                  <div class="list-item-amount">${formatCurrency(loan.balance)}</div>
-                  <button class="btn btn-danger" onclick="removeLoan(${i})">Remove</button>
-                </div>
-              `).join('')}
+            <div class="form-group" style="margin-top: 16px;">
+              <input type="text" id="new-loan-name" placeholder="Loan name (e.g., Auto Loan)">
             </div>
-            
-            <div class="inline-form" style="margin-top: 12px;">
-              <input type="text" id="new-loan-name" placeholder="Loan name">
-              <div class="inline-form-row">
-                <div class="input-prefix" style="flex: 1;">
-                  <input type="number" id="new-loan-balance" step="0.01" min="0" placeholder="Remaining balance">
-                </div>
-                <button class="btn btn-secondary" onclick="addLoan()">Add</button>
-              </div>
+            <div class="form-group">
+              <input type="number" id="new-loan-balance" step="0.01" min="0" placeholder="Current balance">
             </div>
+            <div class="form-group">
+              <label>Link to monthly payment (optional)</label>
+              <select id="new-loan-payment">
+                <option value="">-- None --</option>
+                ${appData.monthlyPayments.map((p, i) => `
+                  <option value="${i}">${p.name} (${formatCurrency(p.amount)})</option>
+                `).join('')}
+              </select>
+            </div>
+            <button class="btn btn-secondary btn-block" onclick="addLoan()">+ Add Loan</button>
             
             <div class="btn-group">
               <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
@@ -1246,39 +1122,69 @@
           </div>
         `;
       } else if (setupStep === 5) {
-        // Summary
-        const spendable = appData.checking - appData.emergencyBuffer;
-        const nextPayday = new Date(appData.nextPayday);
-        const weeks = getWeeksBetween(new Date(), nextPayday);
-        const weeklyBudget = spendable / weeks.length;
-        
+        // Current checking balance
         html += `
           <div class="card">
-            <h2>✅ You're all set!</h2>
+            <h2>Current Checking Balance</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              How much is in your checking account right now?
+            </p>
+            
+            <div class="form-group">
+              <label>Checking Balance</label>
+              <input type="number" id="setup-checking" step="0.01" min="0" placeholder="0.00" value="${appData.checking || ''}">
+            </div>
+            
+            <div class="form-group">
+              <label>Next Payday</label>
+              <input type="date" id="setup-next-payday" value="${getNextPayday().toISOString().split('T')[0]}">
+            </div>
+            
+            <div class="btn-group">
+              <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
+              <button class="btn btn-primary" onclick="nextSetupStep()">Continue</button>
+            </div>
+          </div>
+        `;
+      } else if (setupStep === 6) {
+        // Which payments already paid?
+        html += `
+          <div class="card">
+            <h2>Already Paid This Month?</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              Toggle on any payments you've already made
+            </p>
+            
+            ${appData.monthlyPayments.length === 0 ? `
+              <p style="color: var(--text-muted); text-align: center; padding: 20px;">
+                No monthly payments set up
+              </p>
+            ` : appData.monthlyPayments.map((payment, i) => `
+              <div class="payment-item">
+                <div class="list-item-info">
+                  <div class="list-item-name">${payment.name}</div>
+                  <div class="list-item-meta">${formatCurrency(payment.amount)}</div>
+                </div>
+                <div class="payment-toggle">
+                  <span class="toggle-label ${payment.paid ? 'paid' : ''}">${payment.paid ? 'Paid' : 'Unpaid'}</span>
+                  <div class="toggle-switch ${payment.paid ? 'active' : ''}" onclick="togglePaymentPaid(${i})"></div>
+                </div>
+              </div>
+            `).join('')}
             
             <div class="summary-box">
-              <h4>Your weekly budget until ${formatDate(nextPayday)}</h4>
-              <div class="amount">${formatCurrency(weeklyBudget)}</div>
-              <div style="font-size: 0.85rem; margin-top: 8px; color: var(--accent);">
-                ${weeks.length} weeks · $${appData.emergencyBuffer} buffer kept aside
+              <div class="summary-row">
+                <span>Total Monthly</span>
+                <span>${formatCurrency(getTotalMonthlyPayments())}</span>
               </div>
-            </div>
-            
-            <div class="stats-row">
-              <span class="stats-label">Spendable Amount</span>
-              <span class="stats-value">${formatCurrency(appData.checking)}</span>
-            </div>
-            <div class="stats-row">
-              <span class="stats-label">Emergency Buffer</span>
-              <span class="stats-value">-${formatCurrency(appData.emergencyBuffer)}</span>
-            </div>
-            <div class="stats-row">
-              <span class="stats-label">Savings Categories</span>
-              <span class="stats-value">${appData.savingsCategories.length}</span>
-            </div>
-            <div class="stats-row">
-              <span class="stats-label">Recurring Payments</span>
-              <span class="stats-value">${appData.payments.length}</span>
+              <div class="summary-row">
+                <span>Already Paid</span>
+                <span>${formatCurrency(getTotalMonthlyPayments() - getUnpaidTotal())}</span>
+              </div>
+              <div class="summary-row summary-total">
+                <span>Still Owe</span>
+                <span>${formatCurrency(getUnpaidTotal())}</span>
+              </div>
             </div>
             
             <div class="btn-group">
@@ -1288,270 +1194,36 @@
           </div>
         `;
       }
-      
-      return html;
-    }
-    
-    function renderFreshSetup() {
-      const totalSteps = 5;
-      const currentStep = setupStep - 1;
-      
-      let html = `
-        <div class="step-indicator">
-          ${Array(totalSteps).fill(0).map((_, i) => `
-            <div class="step-dot ${i + 1 === currentStep ? 'active' : i + 1 < currentStep ? 'completed' : ''}"></div>
-          `).join('')}
-        </div>
-      `;
-      
-      if (setupStep === 2) {
-        html += `
-          <div class="card">
-            <h2>💵 Paycheck</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              How much did you get paid? (after taxes)
-            </p>
-            
-            <div class="form-group">
-              <label>Paycheck Amount</label>
-              <div class="input-prefix">
-                <input type="number" id="setup-paycheck" step="0.01" min="0" 
-                  value="${appData.paycheck || ''}" placeholder="0.00">
-              </div>
-            </div>
-            
-            <div class="btn-group">
-              <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
-              <button class="btn btn-primary" onclick="nextSetupStep()">Continue</button>
-            </div>
-          </div>
-        `;
-      } else if (setupStep === 3) {
-        html += `
-          <div class="card">
-            <h2>🏦 Savings</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              Create savings categories and set how much of your paycheck goes to each
-            </p>
-            
-            <div id="savings-list">
-              ${appData.savingsCategories.map((cat, i) => `
-                <div class="list-item" style="flex-wrap: wrap;">
-                  <div class="list-item-info" style="flex: 1 1 100%; margin-bottom: 8px;">
-                    <div class="list-item-name">${cat.name}</div>
-                    <div class="list-item-meta">Current balance: ${formatCurrency(cat.balance)}</div>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                    <div class="input-suffix" style="flex: 1;">
-                      <input type="number" class="savings-percent-input" data-index="${i}" 
-                        step="1" min="0" max="100" value="${cat.percentage || 0}" 
-                        style="padding: 8px 12px; font-size: 0.9rem;">
-                    </div>
-                    <span style="color: var(--accent); font-weight: 500; min-width: 80px;">
-                      = ${formatCurrency((cat.percentage || 0) / 100 * (appData.paycheck || 0))}
-                    </span>
-                    <button class="btn btn-danger" onclick="removeSavingsCategory(${i})">✕</button>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-            
-            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
-              <div class="inline-form">
-                <input type="text" id="new-savings-name" placeholder="New category name">
-                <div class="inline-form-row">
-                  <div class="input-prefix" style="flex: 1;">
-                    <input type="number" id="new-savings-balance" step="0.01" min="0" placeholder="Current balance">
-                  </div>
-                  <button class="btn btn-secondary" onclick="addSavingsCategory()">Add</button>
-                </div>
-              </div>
-            </div>
-            
-            <div class="btn-group">
-              <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
-              <button class="btn btn-primary" onclick="nextSetupStep()">Continue</button>
-            </div>
-          </div>
-        `;
-      } else if (setupStep === 4) {
-        html += `
-          <div class="card">
-            <h2>📋 Payments & Subscriptions</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              What bills do you need to pay this month?
-            </p>
-            
-            <div id="payments-list">
-              ${appData.payments.map((payment, i) => `
-                <div class="list-item">
-                  <div class="list-item-info">
-                    <div class="list-item-name">${payment.name}</div>
-                    ${payment.linkedLoan !== null ? `
-                      <div class="list-item-meta">Linked to: ${appData.loans[payment.linkedLoan]?.name || 'Unknown'}</div>
-                    ` : ''}
-                  </div>
-                  <div class="list-item-amount">${formatCurrency(payment.amount)}</div>
-                  <button class="btn btn-danger" onclick="removeSetupPayment(${i})">✕</button>
-                </div>
-              `).join('')}
-            </div>
-            
-            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
-              <div class="form-group">
-                <input type="text" id="new-payment-name" placeholder="Payment name (e.g., Car Payment, Netflix)">
-              </div>
-              <div class="form-group">
-                <div class="input-prefix">
-                  <input type="number" id="new-payment-amount" step="0.01" min="0" placeholder="Amount">
-                </div>
-              </div>
-              ${appData.loans.length > 0 ? `
-                <div class="form-group">
-                  <label>Link to loan (optional)</label>
-                  <select id="new-payment-loan">
-                    <option value="">None</option>
-                    ${appData.loans.map((loan, i) => `
-                      <option value="${i}">${loan.name}</option>
-                    `).join('')}
-                  </select>
-                </div>
-              ` : ''}
-              <button class="btn btn-secondary btn-block" onclick="addSetupPayment()">Add Payment</button>
-            </div>
-            
-            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--border);">
-              <h3 style="margin-bottom: 12px;">Loans (optional)</h3>
-              <div id="loans-list">
-                ${appData.loans.map((loan, i) => `
-                  <div class="list-item">
-                    <div class="list-item-info">
-                      <div class="list-item-name">${loan.name}</div>
-                    </div>
-                    <div class="list-item-amount" style="color: var(--danger);">${formatCurrency(loan.balance)}</div>
-                    <button class="btn btn-danger" onclick="removeLoan(${i})">✕</button>
-                  </div>
-                `).join('')}
-              </div>
-              <div class="inline-form" style="margin-top: 12px;">
-                <input type="text" id="new-loan-name" placeholder="Loan name">
-                <div class="inline-form-row">
-                  <div class="input-prefix" style="flex: 1;">
-                    <input type="number" id="new-loan-balance" step="0.01" min="0" placeholder="Remaining balance">
-                  </div>
-                  <button class="btn btn-secondary" onclick="addLoan()">Add</button>
-                </div>
-              </div>
-            </div>
-            
-            <div class="btn-group">
-              <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
-              <button class="btn btn-primary" onclick="nextSetupStep()">Continue</button>
-            </div>
-          </div>
-        `;
-      } else if (setupStep === 5) {
-        // Calculate summary
-        const paycheck = appData.paycheck || 0;
-        const totalSavings = appData.savingsCategories.reduce((sum, cat) => sum + ((cat.percentage || 0) / 100 * paycheck), 0);
-        const totalPayments = appData.payments.reduce((sum, p) => sum + p.amount, 0);
-        const afterspend = paycheck - totalSavings - totalPayments - appData.emergencyBuffer;
-        const nextPayday = getNextPayday(new Date(new Date().setDate(new Date().getDate() + 1)));
-        const weeks = getWeeksBetween(new Date(), nextPayday);
-        const weeklyBudget = afterspend / weeks.length;
-        
-        html += `
-          <div class="card">
-            <h2>✅ Your Budget</h2>
-            
-            <div class="stats-row">
-              <span class="stats-label">Paycheck</span>
-              <span class="stats-value">${formatCurrency(paycheck)}</span>
-            </div>
-            <div class="stats-row">
-              <span class="stats-label">To Savings</span>
-              <span class="stats-value negative">-${formatCurrency(totalSavings)}</span>
-            </div>
-            <div class="stats-row">
-              <span class="stats-label">Payments</span>
-              <span class="stats-value negative">-${formatCurrency(totalPayments)}</span>
-            </div>
-            <div class="stats-row">
-              <span class="stats-label">Emergency Buffer</span>
-              <span class="stats-value negative">-${formatCurrency(appData.emergencyBuffer)}</span>
-            </div>
-            
-            <div class="summary-box">
-              <h4>Your weekly budget (${weeks.length} weeks)</h4>
-              <div class="amount">${formatCurrency(weeklyBudget)}</div>
-            </div>
-            
-            ${appData.savingsCategories.length > 0 ? `
-              <div style="margin-top: 20px; padding: 16px; background: var(--bg); border-radius: 8px;">
-                <h4 style="margin-bottom: 12px; font-size: 0.9rem;">💡 Transfer these to savings:</h4>
-                ${appData.savingsCategories.map(cat => {
-                  const amount = (cat.percentage || 0) / 100 * paycheck;
-                  return `
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border);">
-                      <span>${cat.name}</span>
-                      <strong style="color: var(--accent);">${formatCurrency(amount)}</strong>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            ` : ''}
-            
-            <div class="btn-group">
-              <button class="btn btn-secondary" onclick="prevSetupStep()">Back</button>
-              <button class="btn btn-primary" onclick="completeFreshSetup()">Start Tracking</button>
-            </div>
-          </div>
-        `;
-      }
-      
-      return html;
-    }
-    
-    function selectSetupMode(mode) {
-      setupMode = mode;
-      setupStep = 2;
-      render();
+
+      app.innerHTML = html;
     }
 
     function nextSetupStep() {
-      if (setupMode === 'midmonth') {
-        if (setupStep === 2) {
-          const spendable = parseFloat(document.getElementById('setup-spendable').value) || 0;
-          const nextPayday = document.getElementById('setup-next-payday').value;
-          
-          if (!nextPayday) {
-            alert('Please select your next payday');
-            return;
-          }
-          
-          appData.checking = spendable;
-          appData.originalSpendable = spendable; // Store original for budget calculations
-          appData.nextPayday = new Date(nextPayday + 'T23:59:59').toISOString();
-          appData.paycheckDate = new Date().toISOString();
-          saveData(appData);
+      if (setupStep === 1) {
+        const paycheck = parseFloat(document.getElementById('setup-paycheck').value) || 0;
+        if (paycheck <= 0) {
+          alert('Please enter your paycheck amount');
+          return;
         }
-      } else if (setupMode === 'fresh') {
-        if (setupStep === 2) {
-          const paycheck = parseFloat(document.getElementById('setup-paycheck').value) || 0;
-          if (paycheck <= 0) {
-            alert('Please enter your paycheck amount');
-            return;
-          }
-          appData.paycheck = paycheck;
-          saveData(appData);
-        } else if (setupStep === 3) {
-          // Save savings percentages
-          document.querySelectorAll('.savings-percent-input').forEach(input => {
-            const index = parseInt(input.dataset.index);
-            appData.savingsCategories[index].percentage = parseFloat(input.value) || 0;
-          });
-          saveData(appData);
+        appData.paycheck = paycheck;
+        saveData(appData);
+      } else if (setupStep === 5) {
+        const checking = parseFloat(document.getElementById('setup-checking').value) || 0;
+        const nextPayday = document.getElementById('setup-next-payday').value;
+        
+        if (checking <= 0) {
+          alert('Please enter your checking balance');
+          return;
         }
+        if (!nextPayday) {
+          alert('Please select your next payday');
+          return;
+        }
+        
+        appData.checking = checking;
+        appData.nextPayday = new Date(nextPayday + 'T23:59:59').toISOString();
+        appData.paycheckDate = new Date().toISOString();
+        saveData(appData);
       }
       
       setupStep++;
@@ -1559,22 +1231,20 @@
     }
 
     function prevSetupStep() {
-      if (setupStep === 2) {
-        setupStep = 1;
-        setupMode = null;
-      } else {
-        setupStep--;
-      }
+      setupStep--;
       render();
     }
 
     function addSavingsCategory() {
       const name = document.getElementById('new-savings-name').value.trim();
-      const balance = parseFloat(document.getElementById('new-savings-balance').value) || 0;
+      const percentage = parseFloat(document.getElementById('new-savings-percent').value) || 0;
       
-      if (!name) return;
+      if (!name) {
+        alert('Please enter a category name');
+        return;
+      }
       
-      appData.savingsCategories.push({ name, balance, percentage: 0 });
+      appData.savingsCategories.push({ name, percentage, balance: 0 });
       saveData(appData);
       render();
     }
@@ -1584,22 +1254,33 @@
       saveData(appData);
       render();
     }
-    
-    function addSetupPayment() {
+
+    function addMonthlyPayment() {
       const name = document.getElementById('new-payment-name').value.trim();
       const amount = parseFloat(document.getElementById('new-payment-amount').value) || 0;
-      const loanSelect = document.getElementById('new-payment-loan');
-      const linkedLoan = loanSelect ? (loanSelect.value !== '' ? parseInt(loanSelect.value) : null) : null;
       
-      if (!name || amount <= 0) return;
+      if (!name) {
+        alert('Please enter a payment name');
+        return;
+      }
+      if (amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+      }
       
-      appData.payments.push({ name, amount, linkedLoan });
+      appData.monthlyPayments.push({ name, amount, paid: false, linkedLoan: null });
       saveData(appData);
       render();
     }
-    
-    function removeSetupPayment(index) {
-      appData.payments.splice(index, 1);
+
+    function removeMonthlyPayment(index) {
+      // Unlink any loans
+      appData.loans.forEach(loan => {
+        if (loan.linkedPayment === index) loan.linkedPayment = null;
+        else if (loan.linkedPayment > index) loan.linkedPayment--;
+      });
+      
+      appData.monthlyPayments.splice(index, 1);
       saveData(appData);
       render();
     }
@@ -1607,56 +1288,52 @@
     function addLoan() {
       const name = document.getElementById('new-loan-name').value.trim();
       const balance = parseFloat(document.getElementById('new-loan-balance').value) || 0;
+      const linkedPaymentStr = document.getElementById('new-loan-payment').value;
+      const linkedPayment = linkedPaymentStr !== '' ? parseInt(linkedPaymentStr) : null;
       
-      if (!name) return;
+      if (!name) {
+        alert('Please enter a loan name');
+        return;
+      }
       
-      appData.loans.push({ name, balance, linkedPayment: null });
+      // Link payment to loan
+      if (linkedPayment !== null && appData.monthlyPayments[linkedPayment]) {
+        appData.monthlyPayments[linkedPayment].linkedLoan = appData.loans.length;
+      }
+      
+      appData.loans.push({ name, balance, linkedPayment });
       saveData(appData);
       render();
     }
 
     function removeLoan(index) {
+      // Unlink payment
+      appData.monthlyPayments.forEach(p => {
+        if (p.linkedLoan === index) p.linkedLoan = null;
+        else if (p.linkedLoan > index) p.linkedLoan--;
+      });
+      
       appData.loans.splice(index, 1);
       saveData(appData);
       render();
     }
 
-    function completeSetup() {
-      appData.initialized = true;
+    function togglePaymentPaid(index) {
+      appData.monthlyPayments[index].paid = !appData.monthlyPayments[index].paid;
       saveData(appData);
       render();
     }
-    
-    function completeFreshSetup() {
-      const paycheck = appData.paycheck;
-      
-      // Set dates
-      appData.paycheckDate = new Date().toISOString();
-      appData.nextPayday = getNextPayday(new Date(new Date().setDate(new Date().getDate() + 1))).toISOString();
-      
-      // Add savings percentages to balances
+
+    function completeSetup() {
+      // Calculate savings from paycheck and add to balances
       appData.savingsCategories.forEach(cat => {
-        cat.balance += (cat.percentage || 0) / 100 * paycheck;
-      });
-      
-      // Calculate checking (what's left after savings and payments)
-      const totalSavings = appData.savingsCategories.reduce((sum, cat) => sum + ((cat.percentage || 0) / 100 * paycheck), 0);
-      const totalPayments = appData.payments.reduce((sum, p) => sum + p.amount, 0);
-      appData.checking = paycheck - totalSavings - totalPayments;
-      appData.originalSpendable = appData.checking; // Store for budget calculations
-      
-      // Subtract payments from linked loans
-      appData.payments.forEach(payment => {
-        if (payment.linkedLoan !== null && appData.loans[payment.linkedLoan]) {
-          appData.loans[payment.linkedLoan].balance -= payment.amount;
-          if (appData.loans[payment.linkedLoan].balance < 0) {
-            appData.loans[payment.linkedLoan].balance = 0;
-          }
-        }
+        const amount = (cat.percentage / 100) * appData.paycheck;
+        cat.balance += amount;
       });
       
       appData.initialized = true;
       saveData(appData);
+      setupStep = 1;
       render();
     }
 
@@ -1665,75 +1342,50 @@
     let tempPaydayData = {};
 
     function renderPaydayFlow() {
-      const steps = 4;
+      const totalSteps = 4;
       const today = new Date();
       
       let html = `
         <div class="header">
           <h1>💵 Payday!</h1>
-          <p class="date">${today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+          <p class="date">${today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
         
-        <div class="step-indicator">
-          ${Array(steps).fill(0).map((_, i) => `
-            <div class="step-dot ${i + 1 === paydayStep ? 'active' : i + 1 < paydayStep ? 'completed' : ''}"></div>
+        <div class="setup-progress">
+          ${Array(totalSteps).fill(0).map((_, i) => `
+            <div class="step ${i < paydayStep ? 'active' : ''}"></div>
           `).join('')}
         </div>
       `;
-      
+
       if (paydayStep === 1) {
         html += `
           <div class="card">
-            <h2>How much did you get paid?</h2>
-            
+            <h2>How much was your paycheck?</h2>
             <div class="form-group">
-              <label>Paycheck Amount (after taxes)</label>
-              <div class="input-prefix">
-                <input type="number" id="paycheck-amount" step="0.01" min="0" 
-                  value="${tempPaydayData.paycheck || ''}" placeholder="0.00">
-              </div>
+              <input type="number" id="payday-paycheck" step="0.01" min="0" placeholder="0.00">
             </div>
-            
-            <div class="btn-group">
-              <button class="btn btn-primary" onclick="nextPaydayStep()">Continue</button>
-            </div>
+            <button class="btn btn-primary btn-block" onclick="nextPaydayStep()">Continue</button>
           </div>
         `;
       } else if (paydayStep === 2) {
-        const paycheck = tempPaydayData.paycheck || 0;
-        
         html += `
           <div class="card">
-            <h2>Savings Allocations</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              What percentage of your paycheck goes to each savings?
+            <h2>Savings</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              Confirm your savings percentages
             </p>
             
             ${appData.savingsCategories.map((cat, i) => `
               <div class="form-group">
                 <label>${cat.name} (Current: ${formatCurrency(cat.balance)})</label>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                  <div class="input-suffix" style="flex: 1;">
-                    <input type="number" class="savings-percent" data-index="${i}" 
-                      step="1" min="0" max="100" value="${tempPaydayData.savingsPercentages?.[i] || cat.percentage || 0}">
-                  </div>
-                  <span style="color: var(--accent); font-weight: 500; min-width: 100px; text-align: right;">
-                    = ${formatCurrency((tempPaydayData.savingsPercentages?.[i] || cat.percentage || 0) / 100 * paycheck)}
-                  </span>
-                </div>
+                <input type="number" class="savings-percent-input" data-index="${i}" 
+                       value="${cat.percentage}" min="0" max="100" placeholder="0">
+                <span style="color: var(--text-muted); font-size: 0.85rem;">
+                  = ${formatCurrency((tempPaydayData.paycheck || 0) * (cat.percentage / 100))}
+                </span>
               </div>
             `).join('')}
-            
-            ${appData.savingsCategories.length === 0 ? `
-              <p style="color: var(--text-muted); text-align: center; padding: 20px;">
-                No savings categories set up yet. You can add them in settings.
-              </p>
-            ` : ''}
-            
-            <div class="summary-box">
-              <h4>Total to Savings</h4>
-              <div class="amount" id="total-savings">${formatCurrency(0)}</div>
-            </div>
             
             <div class="btn-group">
               <button class="btn btn-secondary" onclick="prevPaydayStep()">Back</button>
@@ -1742,59 +1394,20 @@
           </div>
         `;
       } else if (paydayStep === 3) {
-        const lastPayments = appData.payments || [];
-        
         html += `
           <div class="card">
-            <h2>Payments & Subscriptions</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
-              Review and update your monthly payments
+            <h2>Monthly Payments</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              Update your payment amounts if needed
             </p>
             
-            <div id="payments-list">
-              ${(tempPaydayData.payments || lastPayments).map((payment, i) => `
-                <div class="list-item">
-                  <div class="list-item-info">
-                    <div class="list-item-name">${payment.name}</div>
-                    ${payment.linkedLoan !== null ? `
-                      <div class="list-item-meta">Linked to: ${appData.loans[payment.linkedLoan]?.name || 'Unknown Loan'}</div>
-                    ` : ''}
-                  </div>
-                  <div class="list-item-amount">${formatCurrency(payment.amount)}</div>
-                  <div class="list-item-actions">
-                    <button class="btn btn-danger" onclick="removePayment(${i})">✕</button>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-            
-            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+            ${appData.monthlyPayments.map((payment, i) => `
               <div class="form-group">
-                <input type="text" id="new-payment-name" placeholder="Payment name">
+                <label>${payment.name}</label>
+                <input type="number" class="payment-amount-input" data-index="${i}" 
+                       value="${payment.amount}" step="0.01" min="0">
               </div>
-              <div class="form-group">
-                <div class="input-prefix">
-                  <input type="number" id="new-payment-amount" step="0.01" min="0" placeholder="Amount">
-                </div>
-              </div>
-              ${appData.loans.length > 0 ? `
-                <div class="form-group">
-                  <label>Link to loan (optional)</label>
-                  <select id="new-payment-loan">
-                    <option value="">None</option>
-                    ${appData.loans.map((loan, i) => `
-                      <option value="${i}">${loan.name}</option>
-                    `).join('')}
-                  </select>
-                </div>
-              ` : ''}
-              <button class="btn btn-secondary btn-block" onclick="addPayment()">Add Payment</button>
-            </div>
-            
-            <div class="summary-box">
-              <h4>Total Payments</h4>
-              <div class="amount" id="total-payments">${formatCurrency((tempPaydayData.payments || lastPayments).reduce((sum, p) => sum + p.amount, 0))}</div>
-            </div>
+            `).join('')}
             
             <div class="btn-group">
               <button class="btn btn-secondary" onclick="prevPaydayStep()">Back</button>
@@ -1803,100 +1416,32 @@
           </div>
         `;
       } else if (paydayStep === 4) {
-        const paycheck = tempPaydayData.paycheck || 0;
-        const totalSavings = appData.savingsCategories.reduce((sum, cat, i) => {
-          return sum + ((tempPaydayData.savingsPercentages?.[i] || 0) / 100 * paycheck);
-        }, 0);
-        const totalPayments = (tempPaydayData.payments || []).reduce((sum, p) => sum + p.amount, 0);
-        const afterspend = paycheck - totalSavings - totalPayments;
-        const nextPayday = getNextPayday(new Date(new Date().setDate(new Date().getDate() + 1)));
-        const weeks = getWeeksBetween(new Date(), nextPayday);
-        const weeklyBudget = (afterspend - appData.emergencyBuffer) / weeks.length;
-        
         html += `
           <div class="card">
-            <h2>Your Budget Summary</h2>
+            <h2>Current Checking Balance</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+              How much is in your checking now?
+            </p>
             
-            <div class="stats-row">
-              <span class="stats-label">Paycheck</span>
-              <span class="stats-value">${formatCurrency(paycheck)}</span>
-            </div>
-            
-            <div class="stats-row">
-              <span class="stats-label">To Savings</span>
-              <span class="stats-value negative">-${formatCurrency(totalSavings)}</span>
-            </div>
-            
-            <div class="stats-row">
-              <span class="stats-label">Payments/Subscriptions</span>
-              <span class="stats-value negative">-${formatCurrency(totalPayments)}</span>
-            </div>
-            
-            <div class="stats-row">
-              <span class="stats-label">Emergency Buffer</span>
-              <span class="stats-value negative">-${formatCurrency(appData.emergencyBuffer)}</span>
-            </div>
-            
-            <div class="stats-row" style="font-weight: bold; border-top: 2px solid var(--border); padding-top: 16px;">
-              <span class="stats-label">Spendable Amount</span>
-              <span class="stats-value ${afterspend - appData.emergencyBuffer >= 0 ? 'positive' : 'negative'}">${formatCurrency(afterspend - appData.emergencyBuffer)}</span>
-            </div>
-            
-            <div class="summary-box" style="margin-top: 24px;">
-              <h4>Weekly Budget (${weeks.length} weeks until next payday)</h4>
-              <div class="amount">${formatCurrency(weeklyBudget)}</div>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 16px; background: var(--bg); border-radius: 8px;">
-              <h4 style="margin-bottom: 12px; font-size: 0.9rem;">💡 Transfer these amounts to savings:</h4>
-              ${appData.savingsCategories.map((cat, i) => {
-                const amount = (tempPaydayData.savingsPercentages?.[i] || 0) / 100 * paycheck;
-                return `
-                  <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border);">
-                    <span>${cat.name}</span>
-                    <strong style="color: var(--accent);">${formatCurrency(amount)}</strong>
-                  </div>
-                `;
-              }).join('')}
+            <div class="form-group">
+              <input type="number" id="payday-checking" step="0.01" min="0" placeholder="0.00">
             </div>
             
             <div class="btn-group">
               <button class="btn btn-secondary" onclick="prevPaydayStep()">Back</button>
-              <button class="btn btn-primary" onclick="completePaydayFlow()">Start Month</button>
+              <button class="btn btn-primary" onclick="completePayday()">Start Month</button>
             </div>
           </div>
         `;
       }
-      
-      app.innerHTML = html;
-      
-      // Add event listeners for savings percentage inputs
-      if (paydayStep === 2) {
-        document.querySelectorAll('.savings-percent').forEach(input => {
-          input.addEventListener('input', updateSavingsTotal);
-        });
-        updateSavingsTotal();
-      }
-    }
 
-    function updateSavingsTotal() {
-      const paycheck = tempPaydayData.paycheck || 0;
-      let total = 0;
-      
-      document.querySelectorAll('.savings-percent').forEach(input => {
-        const percent = parseFloat(input.value) || 0;
-        total += (percent / 100) * paycheck;
-      });
-      
-      const totalEl = document.getElementById('total-savings');
-      if (totalEl) {
-        totalEl.textContent = formatCurrency(total);
-      }
+      app.innerHTML = html;
+      nav.classList.add('hidden');
     }
 
     function nextPaydayStep() {
       if (paydayStep === 1) {
-        const paycheck = parseFloat(document.getElementById('paycheck-amount').value) || 0;
+        const paycheck = parseFloat(document.getElementById('payday-paycheck').value) || 0;
         if (paycheck <= 0) {
           alert('Please enter your paycheck amount');
           return;
@@ -1904,14 +1449,14 @@
         tempPaydayData.paycheck = paycheck;
       } else if (paydayStep === 2) {
         tempPaydayData.savingsPercentages = [];
-        document.querySelectorAll('.savings-percent').forEach(input => {
-          tempPaydayData.savingsPercentages.push(parseFloat(input.value) || 0);
+        document.querySelectorAll('.savings-percent-input').forEach(input => {
+          tempPaydayData.savingsPercentages[parseInt(input.dataset.index)] = parseFloat(input.value) || 0;
         });
       } else if (paydayStep === 3) {
-        // Payments are already in tempPaydayData.payments
-        if (!tempPaydayData.payments) {
-          tempPaydayData.payments = [...appData.payments];
-        }
+        tempPaydayData.paymentAmounts = [];
+        document.querySelectorAll('.payment-amount-input').forEach(input => {
+          tempPaydayData.paymentAmounts[parseInt(input.dataset.index)] = parseFloat(input.value) || 0;
+        });
       }
       
       paydayStep++;
@@ -1923,50 +1468,33 @@
       render();
     }
 
-    function addPayment() {
-      const name = document.getElementById('new-payment-name').value.trim();
-      const amount = parseFloat(document.getElementById('new-payment-amount').value) || 0;
-      const loanSelect = document.getElementById('new-payment-loan');
-      const linkedLoan = loanSelect ? (loanSelect.value !== '' ? parseInt(loanSelect.value) : null) : null;
-      
-      if (!name || amount <= 0) return;
-      
-      if (!tempPaydayData.payments) {
-        tempPaydayData.payments = [...appData.payments];
+    function completePayday() {
+      const checking = parseFloat(document.getElementById('payday-checking').value) || 0;
+      if (checking <= 0) {
+        alert('Please enter your checking balance');
+        return;
       }
-      
-      tempPaydayData.payments.push({ name, amount, linkedLoan });
-      render();
-    }
 
-    function removePayment(index) {
-      if (!tempPaydayData.payments) {
-        tempPaydayData.payments = [...appData.payments];
-      }
-      tempPaydayData.payments.splice(index, 1);
-      render();
-    }
-
-    function completePaydayFlow() {
       const paycheck = tempPaydayData.paycheck;
       
-      // Update app data
+      // Update paycheck
       appData.paycheck = paycheck;
-      appData.paycheckDate = new Date().toISOString();
-      appData.nextPayday = getNextPayday(new Date(new Date().setDate(new Date().getDate() + 1))).toISOString();
       
-      // Update savings categories with new percentages and add to balances
+      // Update savings percentages and add to balances
       appData.savingsCategories.forEach((cat, i) => {
-        const percent = tempPaydayData.savingsPercentages?.[i] || 0;
+        const percent = tempPaydayData.savingsPercentages?.[i] || cat.percentage;
         cat.percentage = percent;
         cat.balance += (percent / 100) * paycheck;
       });
       
-      // Update payments
-      appData.payments = tempPaydayData.payments || appData.payments;
+      // Update payment amounts
+      appData.monthlyPayments.forEach((payment, i) => {
+        payment.amount = tempPaydayData.paymentAmounts?.[i] || payment.amount;
+        payment.paid = false; // Reset all to unpaid
+      });
       
-      // Subtract payments from linked loans
-      appData.payments.forEach(payment => {
+      // Subtract from linked loans
+      appData.monthlyPayments.forEach(payment => {
         if (payment.linkedLoan !== null && appData.loans[payment.linkedLoan]) {
           appData.loans[payment.linkedLoan].balance -= payment.amount;
           if (appData.loans[payment.linkedLoan].balance < 0) {
@@ -1975,21 +1503,21 @@
         }
       });
       
-      // Clear expenses for new period
+      // Update checking and dates
+      appData.checking = checking;
+      appData.paycheckDate = new Date().toISOString();
+      appData.nextPayday = getNextPayday(new Date(new Date().setDate(new Date().getDate() + 1))).toISOString();
+      
+      // Clear expenses and extra income
       appData.expenses = [];
       appData.extraIncome = [];
       
-      // Update checking balance
-      const totalSavings = appData.savingsCategories.reduce((sum, cat, i) => {
-        return sum + ((tempPaydayData.savingsPercentages?.[i] || 0) / 100 * paycheck);
-      }, 0);
-      const totalPayments = appData.payments.reduce((sum, p) => sum + p.amount, 0);
-      appData.checking = paycheck - totalSavings - totalPayments;
-      appData.originalSpendable = appData.checking; // Store for budget calculations
+      // Mark payday as handled
+      appData.paydayHandled = true;
       
       saveData(appData);
       
-      // Reset payday flow
+      // Reset
       paydayStep = 1;
       tempPaydayData = {};
       
@@ -2001,13 +1529,23 @@
       const weeklyBudgets = calculateWeeklyBudgets();
       const currentWeekIndex = getCurrentWeekIndex();
       const currentWeek = weeklyBudgets[currentWeekIndex] || { budget: 0, spent: 0, remaining: 0 };
-      const spentPercent = currentWeek.budget > 0 ? (currentWeek.spent / currentWeek.budget) * 100 : 0;
-      const isOverBudget = currentWeek.remaining < 0;
       
+      const spendable = calculateSpendable();
+      const totalExtraIncome = appData.extraIncome.reduce((sum, e) => sum + e.amount, 0);
+      const totalAvailable = spendable + totalExtraIncome;
+      const totalSpent = appData.expenses.filter(e => !e.fromSavings).reduce((sum, e) => sum + e.amount, 0);
+      
+      const percentSpent = currentWeek.budget > 0 ? (currentWeek.spent / currentWeek.budget) * 100 : 0;
       let progressClass = '';
-      if (spentPercent >= 100) progressClass = 'danger';
-      else if (spentPercent >= 75) progressClass = 'warning';
-      
+      let amountClass = '';
+      if (percentSpent > 100) {
+        progressClass = 'danger';
+        amountClass = 'over';
+      } else if (percentSpent > 75) {
+        progressClass = 'warning';
+        amountClass = 'warning';
+      }
+
       const today = new Date();
       
       let html = `
@@ -2015,193 +1553,194 @@
           <h1>💰 Based Budgeting</h1>
           <p class="date">${today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-      `;
-      
-      if (isOverBudget) {
-        html += `
-          <div class="alert alert-danger">
-            ⚠️ You're over budget this week! Try to hold off on spending.
-          </div>
-        `;
-      } else if (spentPercent >= 75) {
-        html += `
-          <div class="alert alert-warning">
-            ⚡ You've used ${Math.round(spentPercent)}% of this week's budget. Spend carefully!
-          </div>
-        `;
-      }
-      
-      html += `
+        
         <div class="card">
-          <h2>This Week's Budget</h2>
-          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
-            ${currentWeek.start ? formatDateRange(currentWeek.start, currentWeek.end) : 'No budget set'}
-          </p>
-          
           <div class="budget-display">
-            <div class="budget-amount ${isOverBudget ? 'over' : ''}">${formatCurrency(Math.abs(currentWeek.remaining))}</div>
-            <div class="budget-label">${isOverBudget ? 'Over Budget' : 'Remaining'}</div>
+            <div class="budget-label">This Week's Budget</div>
+            <div class="budget-amount ${amountClass}">${formatCurrency(currentWeek.remaining)}</div>
+            <div class="budget-label">remaining of ${formatCurrency(currentWeek.budget)}</div>
           </div>
           
           <div class="progress-bar">
-            <div class="progress-fill ${progressClass}" style="width: ${Math.min(spentPercent, 100)}%"></div>
+            <div class="progress-fill ${progressClass}" style="width: ${Math.min(percentSpent, 100)}%"></div>
           </div>
           
           <div class="stats-row">
-            <span class="stats-label">Weekly Budget</span>
-            <span class="stats-value">${formatCurrency(currentWeek.budget)}</span>
-          </div>
-          <div class="stats-row">
-            <span class="stats-label">Spent</span>
-            <span class="stats-value negative">-${formatCurrency(currentWeek.spent)}</span>
-          </div>
-          
-          <div class="btn-group">
-            <button class="btn btn-primary btn-block" onclick="openModal('addExpense')">+ Add Expense</button>
+            <span class="stats-label">Spent this week</span>
+            <span class="stats-value">${formatCurrency(currentWeek.spent)}</span>
           </div>
         </div>
         
         <div class="card">
-          <h2>Quick Actions</h2>
-          <div class="btn-group" style="flex-wrap: wrap;">
-            <button class="btn btn-secondary" onclick="openModal('addIncome')" style="flex: 1 1 45%;">+ Add Income</button>
-            <button class="btn btn-secondary" onclick="openModal('savingsExpense')" style="flex: 1 1 45%;">Buy from Savings</button>
-          </div>
-        </div>
-        
-        <div class="card">
-          <h2>Month Overview</h2>
+          <h2>Monthly Overview</h2>
           
+          <div class="stats-row">
+            <span class="stats-label">Checking Balance</span>
+            <span class="stats-value">${formatCurrency(appData.checking)}</span>
+          </div>
+          <div class="stats-row">
+            <span class="stats-label">Unpaid Bills</span>
+            <span class="stats-value negative">-${formatCurrency(getUnpaidTotal())}</span>
+          </div>
           <div class="stats-row">
             <span class="stats-label">Emergency Buffer</span>
-            <span class="stats-value">${formatCurrency(appData.emergencyBuffer)}</span>
+            <span class="stats-value">-${formatCurrency(appData.emergencyBuffer)}</span>
+          </div>
+          ${totalExtraIncome > 0 ? `
+            <div class="stats-row">
+              <span class="stats-label">Extra Income</span>
+              <span class="stats-value positive">+${formatCurrency(totalExtraIncome)}</span>
+            </div>
+          ` : ''}
+          <div class="stats-row" style="border-top: 2px solid var(--accent); padding-top: 12px; margin-top: 8px;">
+            <span class="stats-label"><strong>Spendable</strong></span>
+            <span class="stats-value positive"><strong>${formatCurrency(totalAvailable)}</strong></span>
           </div>
           <div class="stats-row">
-            <span class="stats-label">Next Payday</span>
-            <span class="stats-value">${appData.nextPayday ? formatDate(appData.nextPayday) : 'Not set'}</span>
+            <span class="stats-label">Total Spent</span>
+            <span class="stats-value">${formatCurrency(totalSpent)}</span>
           </div>
           <div class="stats-row">
-            <span class="stats-label">Weeks Remaining</span>
-            <span class="stats-value">${weeklyBudgets.length - currentWeekIndex}</span>
+            <span class="stats-label">Remaining</span>
+            <span class="stats-value ${totalAvailable - totalSpent >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalAvailable - totalSpent)}</span>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>Monthly Payments</h2>
+          <div class="stats-row">
+            <span class="stats-label">Total Monthly</span>
+            <span class="stats-value">${formatCurrency(getTotalMonthlyPayments())}</span>
+          </div>
+          <div class="stats-row">
+            <span class="stats-label">Still Owe</span>
+            <span class="stats-value negative">${formatCurrency(getUnpaidTotal())}</span>
           </div>
           
-          <h3 style="margin-top: 20px;">Weekly Breakdown</h3>
-          ${weeklyBudgets.map((week, i) => {
-            const isCurrent = i === currentWeekIndex;
-            const isPast = i < currentWeekIndex;
-            return `
-              <div class="list-item" style="${isCurrent ? 'border: 2px solid var(--accent);' : ''} ${isPast ? 'opacity: 0.6;' : ''}">
-                <div class="list-item-info">
-                  <div class="list-item-name">${isCurrent ? '→ ' : ''}Week ${i + 1}</div>
-                  <div class="list-item-meta">${formatDateRange(week.start, week.end)}</div>
-                </div>
-                <div style="text-align: right;">
-                  <div class="list-item-amount ${week.remaining < 0 ? 'negative' : ''}">${formatCurrency(week.remaining)}</div>
-                  <div class="list-item-meta">${formatCurrency(week.spent)} spent</div>
-                </div>
+          ${appData.monthlyPayments.map((payment, i) => `
+            <div class="payment-item">
+              <div class="list-item-info">
+                <div class="list-item-name">${payment.name}</div>
+                <div class="list-item-meta">${formatCurrency(payment.amount)}</div>
               </div>
-            `;
-          }).join('')}
+              <div class="payment-toggle">
+                <span class="toggle-label ${payment.paid ? 'paid' : ''}">${payment.paid ? 'Paid' : 'Unpaid'}</span>
+                <div class="toggle-switch ${payment.paid ? 'active' : ''}" onclick="togglePayment(${i})"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        
+        ${appData.loans.length > 0 ? `
+          <div class="card">
+            <h2>Loans</h2>
+            ${appData.loans.map(loan => `
+              <div class="stats-row">
+                <span class="stats-label">${loan.name}</span>
+                <span class="stats-value negative">${formatCurrency(loan.balance)}</span>
+              </div>
+            `).join('')}
+            <div class="stats-row" style="border-top: 2px solid var(--danger); padding-top: 12px; margin-top: 8px;">
+              <span class="stats-label"><strong>Total Owed</strong></span>
+              <span class="stats-value negative"><strong>${formatCurrency(appData.loans.reduce((sum, l) => sum + l.balance, 0))}</strong></span>
+            </div>
+          </div>
+        ` : ''}
+        
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="openModal('addExpense')">+ Expense</button>
+          <button class="btn btn-secondary" onclick="openModal('addIncome')">+ Income</button>
         </div>
       `;
-      
+
       app.innerHTML = html;
-      
-      if (modalOpen) {
-        renderModal();
-      }
+    }
+
+    function togglePayment(index) {
+      appData.monthlyPayments[index].paid = !appData.monthlyPayments[index].paid;
+      saveData(appData);
+      render();
     }
 
     // ==================== EXPENSES VIEW ====================
     function renderExpenses() {
-      const today = new Date();
-      const weekStart = getWeekStart(today);
-      const weekEnd = getWeekEnd(today);
-      
-      const thisWeekExpenses = appData.expenses.filter(e => {
-        const date = new Date(e.date);
-        return date >= weekStart && date <= weekEnd;
-      }).sort((a, b) => new Date(b.date) - new Date(a.date));
-      
-      const allExpenses = [...appData.expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const weeklyBudgets = calculateWeeklyBudgets();
+      const currentWeekIndex = getCurrentWeekIndex();
       
       let html = `
         <div class="header">
-          <h1>Expenses</h1>
+          <h1>📋 Expenses</h1>
           <p class="date">Track your spending</p>
         </div>
         
-        <div class="card">
-          <div class="btn-group" style="margin-bottom: 20px;">
-            <button class="btn btn-primary btn-block" onclick="openModal('addExpense')">+ Add Expense</button>
-          </div>
-          
-          <h3>This Week</h3>
-          ${thisWeekExpenses.length === 0 ? `
-            <div class="empty-state">
-              <p>No expenses this week yet!</p>
-            </div>
-          ` : thisWeekExpenses.map((expense, i) => `
-            <div class="list-item">
-              <div class="list-item-info">
-                <div class="list-item-name">${expense.name}</div>
-                <div class="list-item-meta">
-                  ${formatDate(expense.date)} · 
-                  <span class="expense-category">${expense.category}</span>
-                  ${expense.fromSavings ? ` · From ${expense.fromSavings}` : ''}
-                </div>
-              </div>
-              <div class="list-item-amount ${expense.fromSavings ? '' : 'negative'}">
-                ${expense.fromSavings ? '' : '-'}${formatCurrency(expense.amount)}
-              </div>
-              <div class="list-item-actions">
-                <button class="btn btn-danger" onclick="deleteExpense(${appData.expenses.indexOf(expense)})">✕</button>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-        
-        <div class="card">
-          <h3>All Expenses This Month</h3>
-          ${allExpenses.length === 0 ? `
-            <div class="empty-state">
-              <p>No expenses recorded yet</p>
-            </div>
-          ` : allExpenses.slice(0, 20).map((expense) => `
-            <div class="list-item">
-              <div class="list-item-info">
-                <div class="list-item-name">${expense.name}</div>
-                <div class="list-item-meta">
-                  ${formatDate(expense.date)} · 
-                  <span class="expense-category">${expense.category}</span>
-                  ${expense.fromSavings ? ` · From ${expense.fromSavings}` : ''}
-                </div>
-              </div>
-              <div class="list-item-amount ${expense.fromSavings ? '' : 'negative'}">
-                ${expense.fromSavings ? '' : '-'}${formatCurrency(expense.amount)}
-              </div>
-            </div>
-          `).join('')}
-          ${allExpenses.length > 20 ? `
-            <p style="text-align: center; color: var(--text-muted); margin-top: 16px;">
-              Showing 20 of ${allExpenses.length} expenses
-            </p>
-          ` : ''}
+        <div class="btn-group" style="margin-bottom: 20px;">
+          <button class="btn btn-primary" onclick="openModal('addExpense')">+ Add Expense</button>
+          <button class="btn btn-secondary" onclick="openModal('savingsExpense')">Buy from Savings</button>
         </div>
       `;
-      
-      app.innerHTML = html;
-      
-      if (modalOpen) {
-        renderModal();
+
+      // Show weeks
+      weeklyBudgets.forEach((week, i) => {
+        const isCurrent = i === currentWeekIndex;
+        const weekExpenses = appData.expenses.filter(e => {
+          const expDate = new Date(e.date);
+          return expDate >= week.start && expDate <= week.end;
+        });
+
+        html += `
+          <div class="week-card ${isCurrent ? 'current' : ''}">
+            <div class="week-header">
+              <span class="week-title">${isCurrent ? '📍 ' : ''}Week ${i + 1}</span>
+              <span class="week-dates">${formatDate(week.start)} - ${formatDate(week.end)}</span>
+            </div>
+            <div class="stats-row">
+              <span>Budget: ${formatCurrency(week.budget)}</span>
+              <span class="${week.remaining >= 0 ? 'positive' : 'negative'}">
+                ${week.remaining >= 0 ? '+' : ''}${formatCurrency(week.remaining)}
+              </span>
+            </div>
+            
+            ${weekExpenses.length > 0 ? weekExpenses.map(expense => `
+              <div class="expense-item">
+                <div class="expense-info">
+                  <div class="expense-name">${expense.name}</div>
+                  <div class="expense-meta">${expense.category}${expense.fromSavings ? ` • From ${expense.fromSavings}` : ''}</div>
+                </div>
+                <span class="expense-amount ${expense.fromSavings ? '' : 'negative'}">${expense.fromSavings ? '' : '-'}${formatCurrency(expense.amount)}</span>
+                <button class="btn btn-danger" onclick="deleteExpense(${appData.expenses.indexOf(expense)})">✕</button>
+              </div>
+            `).join('') : '<p style="color: var(--text-muted); font-size: 0.85rem; padding: 8px 0;">No expenses</p>'}
+          </div>
+        `;
+      });
+
+      // Extra income section
+      if (appData.extraIncome.length > 0) {
+        html += `
+          <div class="card">
+            <h2>Extra Income</h2>
+            ${appData.extraIncome.map((income, i) => `
+              <div class="list-item">
+                <div class="list-item-info">
+                  <div class="list-item-name">${income.name}</div>
+                  <div class="list-item-meta">${formatDate(income.date)}</div>
+                </div>
+                <span class="list-item-amount positive">+${formatCurrency(income.amount)}</span>
+                <button class="btn btn-danger" onclick="deleteIncome(${i})">✕</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
       }
+
+      app.innerHTML = html;
     }
 
     function deleteExpense(index) {
       if (confirm('Delete this expense?')) {
         const expense = appData.expenses[index];
         
-        // If it was from savings, add the amount back
+        // If from savings, add back
         if (expense.fromSavings) {
           const savingsCat = appData.savingsCategories.find(c => c.name === expense.fromSavings);
           if (savingsCat) {
@@ -2215,152 +1754,97 @@
       }
     }
 
+    function deleteIncome(index) {
+      if (confirm('Delete this income?')) {
+        appData.extraIncome.splice(index, 1);
+        saveData(appData);
+        render();
+      }
+    }
+
     // ==================== SAVINGS VIEW ====================
     function renderSavings() {
       const totalSavings = appData.savingsCategories.reduce((sum, c) => sum + c.balance, 0);
       
       let html = `
         <div class="header">
-          <h1>Savings</h1>
+          <h1>💎 Savings</h1>
           <p class="date">Total: ${formatCurrency(totalSavings)}</p>
         </div>
         
-        <div class="savings-grid">
-          ${appData.savingsCategories.map(cat => `
-            <div class="savings-card">
-              <div class="name">${cat.name}</div>
-              <div class="balance">${formatCurrency(cat.balance)}</div>
-            </div>
-          `).join('')}
-        </div>
-        
-        ${appData.loans.length > 0 ? `
-          <div class="card">
-            <h2>Loans</h2>
-            ${appData.loans.map(loan => `
-              <div class="loan-card">
-                <div class="loan-header">
-                  <span class="loan-name">${loan.name}</span>
-                  <span class="loan-balance">${formatCurrency(loan.balance)}</span>
-                </div>
-                <div class="loan-meta">Remaining balance</div>
+        <div class="card">
+          <div class="savings-grid">
+            ${appData.savingsCategories.map(cat => `
+              <div class="savings-card">
+                <div class="name">${cat.name}</div>
+                <div class="balance">${formatCurrency(cat.balance)}</div>
+                <div class="name">${cat.percentage}% per paycheck</div>
               </div>
             `).join('')}
-            
-            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
-              <h3 style="margin-bottom: 12px;">Make a Payment</h3>
-              <div class="form-group">
-                <label>Select Loan</label>
-                <select id="loan-payment-select">
-                  ${appData.loans.map((loan, i) => `
-                    <option value="${i}">${loan.name} (${formatCurrency(loan.balance)})</option>
-                  `).join('')}
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Payment Amount</label>
-                <div class="input-prefix">
-                  <input type="number" id="loan-payment-amount" step="0.01" min="0" placeholder="0.00">
-                </div>
-              </div>
-              <button class="btn btn-primary btn-block" onclick="makeLoanPayment()">Pay on Loan</button>
-            </div>
           </div>
-        ` : ''}
+          
+          ${appData.savingsCategories.length === 0 ? `
+            <p style="color: var(--text-muted); text-align: center; padding: 20px;">
+              No savings categories yet
+            </p>
+          ` : ''}
+        </div>
         
         <div class="card">
           <h2>Add to Savings</h2>
           <div class="form-group">
-            <label>Select Category</label>
+            <label>Category</label>
             <select id="add-savings-category">
-              ${appData.savingsCategories.map((cat, i) => `
-                <option value="${i}">${cat.name}</option>
+              ${appData.savingsCategories.map(cat => `
+                <option value="${cat.name}">${cat.name}</option>
               `).join('')}
             </select>
           </div>
           <div class="form-group">
             <label>Amount</label>
-            <div class="input-prefix">
-              <input type="number" id="add-savings-amount" step="0.01" min="0" placeholder="0.00">
-            </div>
+            <input type="number" id="add-savings-amount" step="0.01" min="0" placeholder="0.00">
           </div>
           <button class="btn btn-primary btn-block" onclick="addToSavings()">Add to Savings</button>
         </div>
         
-        <div class="card">
-          <h2>Withdraw from Savings</h2>
-          <div class="form-group">
-            <label>Select Category</label>
-            <select id="withdraw-savings-category">
-              ${appData.savingsCategories.map((cat, i) => `
-                <option value="${i}">${cat.name} (${formatCurrency(cat.balance)})</option>
-              `).join('')}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Amount</label>
-            <div class="input-prefix">
-              <input type="number" id="withdraw-savings-amount" step="0.01" min="0" placeholder="0.00">
-            </div>
-          </div>
-          <button class="btn btn-secondary btn-block" onclick="withdrawFromSavings()">Withdraw</button>
-        </div>
+        <button class="btn btn-secondary btn-block" onclick="openModal('savingsExpense')">Buy from Savings</button>
       `;
-      
+
       app.innerHTML = html;
     }
 
     function addToSavings() {
-      const categoryIndex = parseInt(document.getElementById('add-savings-category').value);
+      const category = document.getElementById('add-savings-category').value;
       const amount = parseFloat(document.getElementById('add-savings-amount').value) || 0;
-      
-      if (amount <= 0) return;
-      
-      appData.savingsCategories[categoryIndex].balance += amount;
-      saveData(appData);
-      render();
-    }
-
-    function withdrawFromSavings() {
-      const categoryIndex = parseInt(document.getElementById('withdraw-savings-category').value);
-      const amount = parseFloat(document.getElementById('withdraw-savings-amount').value) || 0;
-      
-      if (amount <= 0) return;
-      if (amount > appData.savingsCategories[categoryIndex].balance) {
-        alert('Not enough in savings!');
-        return;
-      }
-      
-      appData.savingsCategories[categoryIndex].balance -= amount;
-      appData.checking += amount;
-      saveData(appData);
-      render();
-    }
-    
-    function makeLoanPayment() {
-      const loanIndex = parseInt(document.getElementById('loan-payment-select').value);
-      const amount = parseFloat(document.getElementById('loan-payment-amount').value) || 0;
       
       if (amount <= 0) {
         alert('Please enter an amount');
         return;
       }
       
-      appData.loans[loanIndex].balance -= amount;
-      if (appData.loans[loanIndex].balance < 0) {
-        appData.loans[loanIndex].balance = 0;
+      const cat = appData.savingsCategories.find(c => c.name === category);
+      if (cat) {
+        cat.balance += amount;
+        saveData(appData);
+        render();
       }
-      
-      saveData(appData);
-      render();
     }
 
     // ==================== SETTINGS VIEW ====================
     function renderSettings() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      
       let html = `
         <div class="header">
-          <h1>Settings</h1>
+          <h1>⚙️ Settings</h1>
           <p class="date">Manage your budget</p>
+        </div>
+        
+        <div class="card">
+          <h2>Theme</h2>
+          <button class="btn btn-secondary btn-block" onclick="toggleTheme()">
+            ${currentTheme === 'light' ? '🌙 Switch to Dark' : '☀️ Switch to Light'}
+          </button>
         </div>
         
         <div class="card">
@@ -2369,15 +1853,36 @@
             <div class="list-item">
               <div class="list-item-info">
                 <div class="list-item-name">${cat.name}</div>
-                <div class="list-item-meta">${formatCurrency(cat.balance)}</div>
+                <div class="list-item-meta">${formatCurrency(cat.balance)} • ${cat.percentage}%</div>
               </div>
-              <button class="btn btn-danger" onclick="removeSavingsCategorySetting(${i})">Remove</button>
+              <button class="btn btn-danger" onclick="removeSavingsSetting(${i})">Remove</button>
             </div>
           `).join('')}
           
           <div class="inline-form" style="margin-top: 16px;">
             <input type="text" id="settings-new-savings" placeholder="New category name">
-            <button class="btn btn-secondary" onclick="addSavingsCategorySetting()">Add</button>
+            <button class="btn btn-secondary" onclick="addSavingsSetting()">Add</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>Monthly Payments</h2>
+          ${appData.monthlyPayments.map((payment, i) => `
+            <div class="list-item">
+              <div class="list-item-info">
+                <div class="list-item-name">${payment.name}</div>
+                <div class="list-item-meta">${formatCurrency(payment.amount)}</div>
+              </div>
+              <button class="btn btn-danger" onclick="removePaymentSetting(${i})">Remove</button>
+            </div>
+          `).join('')}
+          
+          <div class="form-group" style="margin-top: 16px;">
+            <input type="text" id="settings-new-payment-name" placeholder="Payment name">
+          </div>
+          <div class="inline-form">
+            <input type="number" id="settings-new-payment-amount" step="0.01" min="0" placeholder="Amount">
+            <button class="btn btn-secondary" onclick="addPaymentSetting()">Add</button>
           </div>
         </div>
         
@@ -2404,41 +1909,26 @@
                 <span class="loan-name">${loan.name}</span>
                 <span class="loan-balance">${formatCurrency(loan.balance)}</span>
               </div>
-              <button class="btn btn-danger" style="margin-top: 8px;" onclick="removeLoanSetting(${i})">Remove</button>
+              <button class="btn btn-danger" onclick="removeLoanSetting(${i})">Remove</button>
             </div>
           `).join('')}
           
-          <div class="inline-form" style="margin-top: 16px;">
+          <div class="form-group" style="margin-top: 16px;">
             <input type="text" id="settings-new-loan-name" placeholder="Loan name">
-            <div class="inline-form-row">
-              <div class="input-prefix" style="flex: 1;">
-                <input type="number" id="settings-new-loan-balance" step="0.01" min="0" placeholder="Balance">
-              </div>
-              <button class="btn btn-secondary" onclick="addLoanSetting()">Add</button>
-            </div>
           </div>
-        </div>
-        
-        <div class="card">
-          <h2>Appearance</h2>
-          <div class="list-item" style="cursor: pointer;" onclick="toggleTheme()">
-            <div class="list-item-info">
-              <div class="list-item-name">Dark Mode</div>
-              <div class="list-item-meta">Toggle light/dark theme</div>
-            </div>
-            <div style="font-size: 1.5rem;">${document.documentElement.getAttribute('data-theme') === 'light' ? '☀️' : '🌙'}</div>
+          <div class="inline-form">
+            <input type="number" id="settings-new-loan-balance" step="0.01" min="0" placeholder="Balance">
+            <button class="btn btn-secondary" onclick="addLoanSetting()">Add</button>
           </div>
         </div>
         
         <div class="card">
           <h2>Emergency Buffer</h2>
           <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
-            Amount to keep as a buffer each month
+            Amount to keep as emergency reserve
           </p>
           <div class="form-group">
-            <div class="input-prefix">
-              <input type="number" id="emergency-buffer" step="1" min="0" value="${appData.emergencyBuffer}">
-            </div>
+            <input type="number" id="emergency-buffer" value="${appData.emergencyBuffer}" step="1" min="0">
           </div>
           <button class="btn btn-secondary btn-block" onclick="updateEmergencyBuffer()">Update</button>
         </div>
@@ -2459,23 +1949,48 @@
           <button class="btn btn-danger btn-block" onclick="resetAllData()">Reset Everything</button>
         </div>
       `;
-      
+
       app.innerHTML = html;
     }
 
-    function removeSavingsCategorySetting(index) {
-      if (confirm(`Remove "${appData.savingsCategories[index].name}"? This will delete the category and its balance.`)) {
+    function removeSavingsSetting(index) {
+      if (confirm(`Remove "${appData.savingsCategories[index].name}"? This will delete the balance.`)) {
         appData.savingsCategories.splice(index, 1);
         saveData(appData);
         render();
       }
     }
 
-    function addSavingsCategorySetting() {
+    function addSavingsSetting() {
       const name = document.getElementById('settings-new-savings').value.trim();
       if (!name) return;
       
       appData.savingsCategories.push({ name, balance: 0, percentage: 0 });
+      saveData(appData);
+      render();
+    }
+
+    function removePaymentSetting(index) {
+      if (confirm(`Remove "${appData.monthlyPayments[index].name}"?`)) {
+        // Unlink loans
+        appData.loans.forEach(loan => {
+          if (loan.linkedPayment === index) loan.linkedPayment = null;
+          else if (loan.linkedPayment > index) loan.linkedPayment--;
+        });
+        
+        appData.monthlyPayments.splice(index, 1);
+        saveData(appData);
+        render();
+      }
+    }
+
+    function addPaymentSetting() {
+      const name = document.getElementById('settings-new-payment-name').value.trim();
+      const amount = parseFloat(document.getElementById('settings-new-payment-amount').value) || 0;
+      
+      if (!name || amount <= 0) return;
+      
+      appData.monthlyPayments.push({ name, amount, paid: false, linkedLoan: null });
       saveData(appData);
       render();
     }
@@ -2497,8 +2012,7 @@
 
     function removeLoanSetting(index) {
       if (confirm(`Remove "${appData.loans[index].name}"?`)) {
-        // Remove linked payment references
-        appData.payments.forEach(p => {
+        appData.monthlyPayments.forEach(p => {
           if (p.linkedLoan === index) p.linkedLoan = null;
           else if (p.linkedLoan > index) p.linkedLoan--;
         });
@@ -2527,209 +2041,12 @@
       alert('Emergency buffer updated!');
     }
 
-    function exportToPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      
-      const pageWidth = doc.internal.pageSize.getWidth();
-      let y = 20;
-      const lineHeight = 7;
-      const margin = 20;
-      
-      // Helper functions
-      function addTitle(text) {
-        doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
-        doc.text(text, pageWidth / 2, y, { align: 'center' });
-        y += lineHeight * 2;
-      }
-      
-      function addSectionHeader(text) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text(text, margin, y);
-        y += lineHeight * 1.5;
-      }
-      
-      function addRow(label, value, indent = 0) {
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(label, margin + indent, y);
-        doc.text(value, pageWidth - margin, y, { align: 'right' });
-        y += lineHeight;
-      }
-      
-      function addText(text) {
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(text, margin, y);
-        y += lineHeight;
-      }
-      
-      function checkPageBreak() {
-        if (y > 270) {
-          doc.addPage();
-          y = 20;
-        }
-      }
-      
-      // Title
-      addTitle('💰 Based Budgeting Report');
-      
-      // Date range
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      const startDate = appData.paycheckDate ? formatDate(appData.paycheckDate) : 'N/A';
-      const endDate = appData.nextPayday ? formatDate(appData.nextPayday) : 'N/A';
-      doc.text(`Period: ${startDate} - ${endDate}`, pageWidth / 2, y, { align: 'center' });
-      y += lineHeight;
-      doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, y, { align: 'center' });
-      y += lineHeight * 2;
-      
-      // Budget Summary
-      addSectionHeader('Budget Summary');
-      const weeklyBudgets = calculateWeeklyBudgets();
-      const totalBudget = weeklyBudgets.reduce((sum, w) => sum + w.budget, 0);
-      const totalSpent = weeklyBudgets.reduce((sum, w) => sum + w.spent, 0);
-      const totalRemaining = totalBudget - totalSpent;
-      
-      if (appData.paycheck > 0) {
-        addRow('Paycheck', formatCurrency(appData.paycheck));
-      }
-      addRow('Total Budget', formatCurrency(totalBudget + appData.emergencyBuffer));
-      addRow('Emergency Buffer', formatCurrency(appData.emergencyBuffer));
-      addRow('Spendable Amount', formatCurrency(totalBudget));
-      addRow('Total Spent', formatCurrency(totalSpent));
-      addRow('Remaining', formatCurrency(totalRemaining));
-      y += lineHeight;
-      
-      // Weekly Breakdown
-      checkPageBreak();
-      addSectionHeader('Weekly Breakdown');
-      weeklyBudgets.forEach((week, i) => {
-        const weekLabel = `Week ${i + 1} (${formatDate(week.start)} - ${formatDate(week.end)})`;
-        addRow(weekLabel, `Budget: ${formatCurrency(week.budget)} | Spent: ${formatCurrency(week.spent)}`);
-      });
-      y += lineHeight;
-      
-      // Expenses by Category
-      checkPageBreak();
-      addSectionHeader('Expenses by Category');
-      const expensesByCategory = {};
-      appData.expenses.filter(e => !e.fromSavings).forEach(expense => {
-        if (!expensesByCategory[expense.category]) {
-          expensesByCategory[expense.category] = 0;
-        }
-        expensesByCategory[expense.category] += expense.amount;
-      });
-      
-      Object.entries(expensesByCategory)
-        .sort((a, b) => b[1] - a[1])
-        .forEach(([category, total]) => {
-          addRow(category, formatCurrency(total));
-        });
-      
-      if (Object.keys(expensesByCategory).length === 0) {
-        addText('No expenses recorded');
-      }
-      y += lineHeight;
-      
-      // All Expenses
-      checkPageBreak();
-      addSectionHeader('All Expenses');
-      const sortedExpenses = [...appData.expenses]
-        .filter(e => !e.fromSavings)
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
-      
-      if (sortedExpenses.length === 0) {
-        addText('No expenses recorded');
-      } else {
-        sortedExpenses.forEach(expense => {
-          checkPageBreak();
-          addRow(
-            `${formatDate(expense.date)} - ${expense.name}`,
-            formatCurrency(expense.amount)
-          );
-          doc.setFontSize(8);
-          doc.setTextColor(128);
-          doc.text(`   ${expense.category}`, margin, y);
-          doc.setTextColor(0);
-          y += lineHeight * 0.8;
-        });
-      }
-      y += lineHeight;
-      
-      // Savings Purchases
-      const savingsExpenses = appData.expenses.filter(e => e.fromSavings);
-      if (savingsExpenses.length > 0) {
-        checkPageBreak();
-        addSectionHeader('Purchases from Savings');
-        savingsExpenses.forEach(expense => {
-          addRow(
-            `${formatDate(expense.date)} - ${expense.name}`,
-            formatCurrency(expense.amount)
-          );
-          doc.setFontSize(8);
-          doc.setTextColor(128);
-          doc.text(`   From: ${expense.fromSavings}`, margin, y);
-          doc.setTextColor(0);
-          y += lineHeight * 0.8;
-        });
-        y += lineHeight;
-      }
-      
-      // Extra Income
-      if (appData.extraIncome.length > 0) {
-        checkPageBreak();
-        addSectionHeader('Extra Income');
-        appData.extraIncome.forEach(income => {
-          addRow(
-            `${formatDate(income.date)} - ${income.name}`,
-            formatCurrency(income.amount)
-          );
-        });
-        y += lineHeight;
-      }
-      
-      // Savings Summary
-      if (appData.savingsCategories.length > 0) {
-        checkPageBreak();
-        addSectionHeader('Savings Balances');
-        appData.savingsCategories.forEach(cat => {
-          addRow(cat.name, formatCurrency(cat.balance));
-        });
-        const totalSavings = appData.savingsCategories.reduce((sum, c) => sum + c.balance, 0);
-        doc.setFont('helvetica', 'bold');
-        addRow('Total Savings', formatCurrency(totalSavings));
-        y += lineHeight;
-      }
-      
-      // Loans Summary
-      if (appData.loans.length > 0) {
-        checkPageBreak();
-        addSectionHeader('Loan Balances');
-        appData.loans.forEach(loan => {
-          addRow(loan.name, formatCurrency(loan.balance));
-        });
-        const totalLoans = appData.loans.reduce((sum, l) => sum + l.balance, 0);
-        doc.setFont('helvetica', 'bold');
-        addRow('Total Owed', formatCurrency(totalLoans));
-      }
-      
-      // Save the PDF
-      const filename = `budget-report-${new Date().toISOString().split('T')[0]}.pdf`;
-      doc.save(filename);
-    }
-
     function resetAllData() {
       if (confirm('Are you sure? This will delete ALL your data and cannot be undone.')) {
-        if (confirm('Really sure? Type OK to confirm.')) {
+        if (confirm('Really sure? This is permanent.')) {
           localStorage.removeItem(STORAGE_KEY);
           appData = { ...defaultData };
           setupStep = 1;
-          setupMode = null;
-          paydayStep = 1;
-          tempPaydayData = {};
           render();
         }
       }
@@ -2762,9 +2079,7 @@
               
               <div class="form-group">
                 <label>Amount</label>
-                <div class="input-prefix">
-                  <input type="number" id="expense-amount" step="0.01" min="0" placeholder="0.00">
-                </div>
+                <input type="number" id="expense-amount" step="0.01" min="0" placeholder="0.00">
               </div>
               
               <div class="form-group">
@@ -2789,7 +2104,7 @@
             <div class="modal" onclick="event.stopPropagation()">
               <h2>Add Extra Income</h2>
               <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-                This will be distributed across remaining weeks
+                This will be added to your spendable budget
               </p>
               
               <div class="form-group">
@@ -2799,9 +2114,7 @@
               
               <div class="form-group">
                 <label>Amount</label>
-                <div class="input-prefix">
-                  <input type="number" id="income-amount" step="0.01" min="0" placeholder="0.00">
-                </div>
+                <input type="number" id="income-amount" step="0.01" min="0" placeholder="0.00">
               </div>
               
               <div class="btn-group">
@@ -2827,9 +2140,7 @@
               
               <div class="form-group">
                 <label>Amount</label>
-                <div class="input-prefix">
-                  <input type="number" id="savings-expense-amount" step="0.01" min="0" placeholder="0.00">
-                </div>
+                <input type="number" id="savings-expense-amount" step="0.01" min="0" placeholder="0.00">
               </div>
               
               <div class="form-group">
@@ -2880,8 +2191,6 @@
         fromSavings: null
       });
       
-      // Don't modify checking here - budget calculations use expense tracking
-      
       saveData(appData);
       closeModal();
     }
@@ -2901,8 +2210,6 @@
         date: new Date().toISOString()
       });
       
-      // Don't modify checking here - budget calculations use extraIncome tracking
-      
       saveData(appData);
       closeModal();
     }
@@ -2918,17 +2225,14 @@
         return;
       }
       
-      // Find the savings category and check balance
       const savingsCat = appData.savingsCategories.find(c => c.name === fromSavings);
       if (!savingsCat || savingsCat.balance < amount) {
         alert('Not enough in that savings category!');
         return;
       }
       
-      // Deduct from savings
       savingsCat.balance -= amount;
       
-      // Add expense (marked as from savings so it doesn't affect weekly budget)
       appData.expenses.push({
         name,
         amount,
@@ -2939,6 +2243,176 @@
       
       saveData(appData);
       closeModal();
+    }
+
+    // ==================== PDF EXPORT ====================
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 20;
+      const lineHeight = 7;
+      const margin = 20;
+      
+      function addTitle(text) {
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text(text, pageWidth / 2, y, { align: 'center' });
+        y += lineHeight * 2;
+      }
+      
+      function addSectionHeader(text) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(text, margin, y);
+        y += lineHeight * 1.5;
+      }
+      
+      function addRow(label, value) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(label, margin, y);
+        doc.text(value, pageWidth - margin, y, { align: 'right' });
+        y += lineHeight;
+      }
+      
+      function addText(text) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(text, margin, y);
+        y += lineHeight;
+      }
+      
+      function checkPageBreak() {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+      
+      // Title
+      addTitle('Based Budgeting Report');
+      
+      // Date range
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      const startDate = appData.paycheckDate ? formatDate(appData.paycheckDate) : 'N/A';
+      const endDate = appData.nextPayday ? formatDate(appData.nextPayday) : 'N/A';
+      doc.text(`Period: ${startDate} - ${endDate}`, pageWidth / 2, y, { align: 'center' });
+      y += lineHeight;
+      doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, y, { align: 'center' });
+      y += lineHeight * 2;
+      
+      // Budget Summary
+      addSectionHeader('Budget Summary');
+      const spendable = calculateSpendable();
+      const totalExtraIncome = appData.extraIncome.reduce((sum, e) => sum + e.amount, 0);
+      const totalSpent = appData.expenses.filter(e => !e.fromSavings).reduce((sum, e) => sum + e.amount, 0);
+      
+      addRow('Checking Balance', formatCurrency(appData.checking));
+      addRow('Unpaid Bills', formatCurrency(getUnpaidTotal()));
+      addRow('Emergency Buffer', formatCurrency(appData.emergencyBuffer));
+      addRow('Spendable', formatCurrency(spendable));
+      if (totalExtraIncome > 0) {
+        addRow('Extra Income', formatCurrency(totalExtraIncome));
+      }
+      addRow('Total Spent', formatCurrency(totalSpent));
+      addRow('Remaining', formatCurrency(spendable + totalExtraIncome - totalSpent));
+      y += lineHeight;
+      
+      // Monthly Payments
+      checkPageBreak();
+      addSectionHeader('Monthly Payments');
+      addRow('Total Monthly', formatCurrency(getTotalMonthlyPayments()));
+      addRow('Still Owe', formatCurrency(getUnpaidTotal()));
+      appData.monthlyPayments.forEach(p => {
+        addRow(`${p.name} ${p.paid ? '✓' : ''}`, formatCurrency(p.amount));
+      });
+      y += lineHeight;
+      
+      // Weekly Breakdown
+      checkPageBreak();
+      addSectionHeader('Weekly Breakdown');
+      const weeklyBudgets = calculateWeeklyBudgets();
+      weeklyBudgets.forEach((week, i) => {
+        const weekLabel = `Week ${i + 1} (${formatDate(week.start)} - ${formatDate(week.end)})`;
+        addRow(weekLabel, `Budget: ${formatCurrency(week.budget)} | Spent: ${formatCurrency(week.spent)}`);
+      });
+      y += lineHeight;
+      
+      // Expenses by Category
+      checkPageBreak();
+      addSectionHeader('Expenses by Category');
+      const expensesByCategory = {};
+      appData.expenses.filter(e => !e.fromSavings).forEach(expense => {
+        if (!expensesByCategory[expense.category]) {
+          expensesByCategory[expense.category] = 0;
+        }
+        expensesByCategory[expense.category] += expense.amount;
+      });
+      
+      Object.entries(expensesByCategory)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([category, total]) => {
+          addRow(category, formatCurrency(total));
+        });
+      
+      if (Object.keys(expensesByCategory).length === 0) {
+        addText('No expenses recorded');
+      }
+      y += lineHeight;
+      
+      // All Expenses
+      checkPageBreak();
+      addSectionHeader('All Expenses');
+      const sortedExpenses = [...appData.expenses]
+        .filter(e => !e.fromSavings)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      if (sortedExpenses.length === 0) {
+        addText('No expenses recorded');
+      } else {
+        sortedExpenses.forEach(expense => {
+          checkPageBreak();
+          addRow(`${formatDate(expense.date)} - ${expense.name}`, formatCurrency(expense.amount));
+          doc.setFontSize(8);
+          doc.setTextColor(128);
+          doc.text(`   ${expense.category}`, margin, y);
+          doc.setTextColor(0);
+          y += lineHeight * 0.8;
+        });
+      }
+      y += lineHeight;
+      
+      // Savings
+      if (appData.savingsCategories.length > 0) {
+        checkPageBreak();
+        addSectionHeader('Savings Balances');
+        appData.savingsCategories.forEach(cat => {
+          addRow(cat.name, formatCurrency(cat.balance));
+        });
+        const totalSavings = appData.savingsCategories.reduce((sum, c) => sum + c.balance, 0);
+        doc.setFont('helvetica', 'bold');
+        addRow('Total Savings', formatCurrency(totalSavings));
+        y += lineHeight;
+      }
+      
+      // Loans
+      if (appData.loans.length > 0) {
+        checkPageBreak();
+        addSectionHeader('Loan Balances');
+        appData.loans.forEach(loan => {
+          addRow(loan.name, formatCurrency(loan.balance));
+        });
+        const totalLoans = appData.loans.reduce((sum, l) => sum + l.balance, 0);
+        doc.setFont('helvetica', 'bold');
+        addRow('Total Owed', formatCurrency(totalLoans));
+      }
+      
+      // Save
+      const filename = `budget-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(filename);
     }
 
     // ==================== NAVIGATION ====================
