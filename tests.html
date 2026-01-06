@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Based Budgeting - Unit Tests</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1a1a1a;
+      color: #e8e8e8;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 { color: #4eca8b; }
+    h2 { color: #e8a94a; margin-top: 30px; }
+    .pass { color: #4eca8b; }
+    .fail { color: #e85c4a; }
+    .summary {
+      background: #252525;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 1.2em;
+    }
+    .error {
+      margin-left: 20px;
+      color: #e85c4a;
+      font-size: 0.9em;
+    }
+    .test { margin: 5px 0; }
+    .bug-report {
+      background: #3d2a28;
+      border: 2px solid #e85c4a;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .bug-report h3 { color: #e85c4a; margin-top: 0; }
+  </style>
+</head>
+<body>
+  <h1>Based Budgeting - Unit Tests</h1>
+  <div id="results"></div>
+
+  <script>
+    // ==================== TEST FRAMEWORK ====================
+    let passed = 0;
+    let failed = 0;
+    const failures = [];
+    const results = document.getElementById('results');
+
+    function log(text, className = '') {
+      const div = document.createElement('div');
+      div.className = `test ${className}`;
+      div.textContent = text;
+      results.appendChild(div);
+    }
+
+    function section(title) {
+      const h2 = document.createElement('h2');
+      h2.textContent = title;
+      results.appendChild(h2);
+    }
+
+    function test(name, fn) {
+      try {
+        fn();
+        passed++;
+        log(`✓ ${name}`, 'pass');
+      } catch (e) {
+        failed++;
+        failures.push({ name, error: e.message });
+        log(`✗ ${name}`, 'fail');
+        log(`  Error: ${e.message}`, 'error');
+      }
+    }
+
+    function assertEquals(actual, expected, msg = '') {
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        throw new Error(`${msg} Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+      }
+    }
+
+    function assertTrue(condition, msg = '') {
+      if (!condition) throw new Error(`${msg} Expected true, got false`);
+    }
+
+    function assertFalse(condition, msg = '') {
+      if (condition) throw new Error(`${msg} Expected false, got true`);
+    }
+
+    // ==================== FUNCTIONS UNDER TEST ====================
+
+    function getNthWeekdayOfMonth(year, month, weekday, n) {
+      const first = new Date(year, month, 1);
+      let dayOfWeek = first.getDay();
+      let diff = weekday - dayOfWeek;
+      if (diff < 0) diff += 7;
+      return new Date(year, month, 1 + diff + (n - 1) * 7);
+    }
+
+    function getLastWeekdayOfMonth(year, month, weekday) {
+      const last = new Date(year, month + 1, 0);
+      let dayOfWeek = last.getDay();
+      let diff = dayOfWeek - weekday;
+      if (diff < 0) diff += 7;
+      return new Date(year, month + 1, -diff);
+    }
+
+    function getUSHolidays(year) {
+      const holidays = [];
+      holidays.push(new Date(year, 0, 1)); // New Year's Day
+      holidays.push(getNthWeekdayOfMonth(year, 0, 1, 3)); // MLK Day
+      holidays.push(getNthWeekdayOfMonth(year, 1, 1, 3)); // Presidents Day
+      holidays.push(getLastWeekdayOfMonth(year, 4, 1)); // Memorial Day
+      holidays.push(new Date(year, 5, 19)); // Juneteenth
+      holidays.push(new Date(year, 6, 4)); // Independence Day
+      holidays.push(getNthWeekdayOfMonth(year, 8, 1, 1)); // Labor Day
+      holidays.push(getNthWeekdayOfMonth(year, 9, 1, 2)); // Columbus Day
+      holidays.push(new Date(year, 10, 11)); // Veterans Day
+      holidays.push(getNthWeekdayOfMonth(year, 10, 4, 4)); // Thanksgiving
+      holidays.push(new Date(year, 11, 25)); // Christmas
+      return holidays;
+    }
+
+    function isHoliday(date) {
+      const holidays = getUSHolidays(date.getFullYear());
+      return holidays.some(h =>
+        h.getDate() === date.getDate() &&
+        h.getMonth() === date.getMonth() &&
+        h.getFullYear() === date.getFullYear()
+      );
+    }
+
+    function isWorkday(date) {
+      const day = date.getDay();
+      return day !== 0 && day !== 6 && !isHoliday(date);
+    }
+
+    function getLastWorkdayOfMonth(year, month) {
+      let date = new Date(year, month + 1, 0);
+      while (!isWorkday(date)) {
+        date.setDate(date.getDate() - 1);
+      }
+      return date;
+    }
+
+    function getNextPayday(fromDate = new Date()) {
+      let year = fromDate.getFullYear();
+      let month = fromDate.getMonth();
+      let lastWorkday = getLastWorkdayOfMonth(year, month);
+
+      if (fromDate > lastWorkday) {
+        month++;
+        if (month > 11) {
+          month = 0;
+          year++;
+        }
+        lastWorkday = getLastWorkdayOfMonth(year, month);
+      }
+
+      return lastWorkday;
+    }
+
+    function isPayday(date = new Date()) {
+      const lastWorkday = getLastWorkdayOfMonth(date.getFullYear(), date.getMonth());
+      return date.toDateString() === lastWorkday.toDateString();
+    }
+
+    function getWeekStart(date) {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function getWeekEnd(date) {
+      const start = getWeekStart(date);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      end.setHours(23, 59, 59, 999);
+      return end;
+    }
+
+    function getWeeksBetween(startDate, endDate) {
+      const weeks = [];
+      let current = getWeekStart(startDate);
+      const end = endDate;
+
+      while (current <= end) {
+        const weekEnd = getWeekEnd(current);
+        weeks.push({
+          start: new Date(current),
+          end: weekEnd > end ? new Date(end) : weekEnd
+        });
+        current.setDate(current.getDate() + 7);
+      }
+
+      return weeks;
+    }
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(amount);
+    }
+
+    // ==================== RUN TESTS ====================
+
+    section('HOLIDAY CALCULATION TESTS');
+
+    test('getNthWeekdayOfMonth - MLK Day 2024 (3rd Monday of January)', () => {
+      const mlk = getNthWeekdayOfMonth(2024, 0, 1, 3);
+      assertEquals(mlk.getMonth(), 0, 'Month should be January');
+      assertEquals(mlk.getDate(), 15, 'Date should be 15th');
+      assertEquals(mlk.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getNthWeekdayOfMonth - MLK Day 2025 (3rd Monday of January)', () => {
+      const mlk = getNthWeekdayOfMonth(2025, 0, 1, 3);
+      assertEquals(mlk.getMonth(), 0, 'Month should be January');
+      assertEquals(mlk.getDate(), 20, 'Date should be 20th');
+      assertEquals(mlk.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getNthWeekdayOfMonth - Labor Day 2024 (1st Monday of September)', () => {
+      const labor = getNthWeekdayOfMonth(2024, 8, 1, 1);
+      assertEquals(labor.getMonth(), 8, 'Month should be September');
+      assertEquals(labor.getDate(), 2, 'Date should be 2nd');
+      assertEquals(labor.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getNthWeekdayOfMonth - Thanksgiving 2024 (4th Thursday of November)', () => {
+      const thanksgiving = getNthWeekdayOfMonth(2024, 10, 4, 4);
+      assertEquals(thanksgiving.getMonth(), 10, 'Month should be November');
+      assertEquals(thanksgiving.getDate(), 28, 'Date should be 28th');
+      assertEquals(thanksgiving.getDay(), 4, 'Should be Thursday');
+    });
+
+    test('getNthWeekdayOfMonth - Thanksgiving 2025 (4th Thursday of November)', () => {
+      const thanksgiving = getNthWeekdayOfMonth(2025, 10, 4, 4);
+      assertEquals(thanksgiving.getMonth(), 10, 'Month should be November');
+      assertEquals(thanksgiving.getDate(), 27, 'Date should be 27th');
+      assertEquals(thanksgiving.getDay(), 4, 'Should be Thursday');
+    });
+
+    test('getLastWeekdayOfMonth - Memorial Day 2024 (last Monday of May)', () => {
+      const memorial = getLastWeekdayOfMonth(2024, 4, 1);
+      assertEquals(memorial.getMonth(), 4, 'Month should be May');
+      assertEquals(memorial.getDate(), 27, 'Date should be 27th');
+      assertEquals(memorial.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getLastWeekdayOfMonth - Memorial Day 2025 (last Monday of May)', () => {
+      const memorial = getLastWeekdayOfMonth(2025, 4, 1);
+      assertEquals(memorial.getMonth(), 4, 'Month should be May');
+      assertEquals(memorial.getDate(), 26, 'Date should be 26th');
+      assertEquals(memorial.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getUSHolidays returns correct number of holidays', () => {
+      const holidays = getUSHolidays(2024);
+      assertEquals(holidays.length, 11, 'Should have 11 federal holidays');
+    });
+
+    test('isHoliday - New Years Day 2024', () => {
+      assertTrue(isHoliday(new Date(2024, 0, 1)), 'Jan 1 should be a holiday');
+    });
+
+    test('isHoliday - Christmas 2024', () => {
+      assertTrue(isHoliday(new Date(2024, 11, 25)), 'Dec 25 should be a holiday');
+    });
+
+    test('isHoliday - regular day', () => {
+      assertFalse(isHoliday(new Date(2024, 5, 15)), 'June 15 should not be a holiday');
+    });
+
+    test('isHoliday - Juneteenth 2024', () => {
+      assertTrue(isHoliday(new Date(2024, 5, 19)), 'June 19 should be a holiday');
+    });
+
+    test('isHoliday - Independence Day 2024', () => {
+      assertTrue(isHoliday(new Date(2024, 6, 4)), 'July 4 should be a holiday');
+    });
+
+    section('WORKDAY TESTS');
+
+    test('isWorkday - regular Monday', () => {
+      assertTrue(isWorkday(new Date(2024, 5, 17)), 'June 17, 2024 (Monday) should be a workday');
+    });
+
+    test('isWorkday - Saturday', () => {
+      assertFalse(isWorkday(new Date(2024, 5, 15)), 'June 15, 2024 (Saturday) should not be a workday');
+    });
+
+    test('isWorkday - Sunday', () => {
+      assertFalse(isWorkday(new Date(2024, 5, 16)), 'June 16, 2024 (Sunday) should not be a workday');
+    });
+
+    test('isWorkday - MLK Day 2024 (Monday holiday)', () => {
+      assertFalse(isWorkday(new Date(2024, 0, 15)), 'MLK Day should not be a workday');
+    });
+
+    test('isWorkday - Christmas 2024 (Wednesday)', () => {
+      assertFalse(isWorkday(new Date(2024, 11, 25)), 'Christmas should not be a workday');
+    });
+
+    section('LAST WORKDAY OF MONTH TESTS');
+
+    test('getLastWorkdayOfMonth - January 2024 (ends on Wednesday)', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 0);
+      assertEquals(lastWorkday.getMonth(), 0, 'Month should be January');
+      assertEquals(lastWorkday.getDate(), 31, 'Date should be 31st');
+      assertTrue(isWorkday(lastWorkday), 'Should be a workday');
+    });
+
+    test('getLastWorkdayOfMonth - February 2024 (ends on Thursday, leap year)', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 1);
+      assertEquals(lastWorkday.getMonth(), 1, 'Month should be February');
+      assertEquals(lastWorkday.getDate(), 29, 'Date should be 29th');
+      assertTrue(isWorkday(lastWorkday), 'Should be a workday');
+    });
+
+    test('getLastWorkdayOfMonth - March 2024 (ends on Sunday)', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 2);
+      assertEquals(lastWorkday.getMonth(), 2, 'Month should be March');
+      assertEquals(lastWorkday.getDate(), 29, 'Date should be 29th (Friday)');
+      assertEquals(lastWorkday.getDay(), 5, 'Should be Friday');
+    });
+
+    test('getLastWorkdayOfMonth - June 2024 (ends on Sunday)', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 5);
+      assertEquals(lastWorkday.getMonth(), 5, 'Month should be June');
+      assertEquals(lastWorkday.getDate(), 28, 'Date should be 28th (Friday)');
+      assertEquals(lastWorkday.getDay(), 5, 'Should be Friday');
+    });
+
+    test('getLastWorkdayOfMonth - November 2024 (ends on Saturday)', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 10);
+      assertEquals(lastWorkday.getMonth(), 10, 'Month should be November');
+      assertEquals(lastWorkday.getDate(), 29, 'Date should be 29th');
+      assertEquals(lastWorkday.getDay(), 5, 'Should be Friday');
+    });
+
+    test('getLastWorkdayOfMonth - May 2024 (ends on Friday)', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 4);
+      assertEquals(lastWorkday.getMonth(), 4, 'Month should be May');
+      assertEquals(lastWorkday.getDate(), 31, 'Date should be 31st');
+    });
+
+    section('NEXT PAYDAY TESTS');
+
+    test('getNextPayday - from middle of month, returns end of same month', () => {
+      const nextPayday = getNextPayday(new Date(2024, 5, 15));
+      assertEquals(nextPayday.getMonth(), 5, 'Should be June');
+      assertEquals(nextPayday.getDate(), 28, 'Should be June 28 (last workday)');
+    });
+
+    test('getNextPayday - from after last workday, returns next month', () => {
+      const nextPayday = getNextPayday(new Date(2024, 5, 29));
+      assertEquals(nextPayday.getMonth(), 6, 'Should be July');
+      assertEquals(nextPayday.getDate(), 31, 'Should be July 31');
+    });
+
+    test('getNextPayday - from December after last workday, rolls to January next year', () => {
+      const nextPayday = getNextPayday(new Date(2024, 11, 31));
+      assertEquals(nextPayday.getFullYear(), 2025, 'Should be 2025');
+      assertEquals(nextPayday.getMonth(), 0, 'Should be January');
+    });
+
+    section('IS PAYDAY TESTS');
+
+    test('isPayday - on actual payday', () => {
+      const payday = getLastWorkdayOfMonth(2024, 5);
+      assertTrue(isPayday(payday), 'Should be payday on last workday');
+    });
+
+    test('isPayday - not on payday', () => {
+      assertFalse(isPayday(new Date(2024, 5, 15)), 'June 15 should not be payday');
+    });
+
+    section('WEEK CALCULATION TESTS');
+
+    test('getWeekStart - from Monday returns same day', () => {
+      const monday = new Date(2024, 5, 17);
+      const start = getWeekStart(monday);
+      assertEquals(start.getDate(), 17, 'Should be 17th');
+      assertEquals(start.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getWeekStart - from Wednesday returns previous Monday', () => {
+      const wednesday = new Date(2024, 5, 19);
+      const start = getWeekStart(wednesday);
+      assertEquals(start.getDate(), 17, 'Should be 17th (Monday)');
+      assertEquals(start.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getWeekStart - from Sunday returns previous Monday', () => {
+      const sunday = new Date(2024, 5, 23);
+      const start = getWeekStart(sunday);
+      assertEquals(start.getDate(), 17, 'Should be 17th (Monday)');
+      assertEquals(start.getDay(), 1, 'Should be Monday');
+    });
+
+    test('getWeekEnd - returns Sunday of same week', () => {
+      const monday = new Date(2024, 5, 17);
+      const end = getWeekEnd(monday);
+      assertEquals(end.getDate(), 23, 'Should be 23rd (Sunday)');
+      assertEquals(end.getDay(), 0, 'Should be Sunday');
+    });
+
+    test('getWeeksBetween - single week span', () => {
+      const start = new Date(2024, 5, 17);
+      const end = new Date(2024, 5, 23);
+      const weeks = getWeeksBetween(start, end);
+      assertEquals(weeks.length, 1, 'Should have 1 week');
+    });
+
+    test('getWeeksBetween - two week span', () => {
+      const start = new Date(2024, 5, 17);
+      const end = new Date(2024, 5, 30);
+      const weeks = getWeeksBetween(start, end);
+      assertEquals(weeks.length, 2, 'Should have 2 weeks');
+    });
+
+    test('getWeeksBetween - typical month (~4-5 weeks)', () => {
+      const start = new Date(2024, 5, 1);
+      const end = new Date(2024, 5, 28);
+      const weeks = getWeeksBetween(start, end);
+      assertTrue(weeks.length >= 4 && weeks.length <= 5, `Should have 4-5 weeks, got ${weeks.length}`);
+    });
+
+    section('FORMATTING TESTS');
+
+    test('formatCurrency - positive amount', () => {
+      const result = formatCurrency(1234.56);
+      assertEquals(result, '$1,234.56');
+    });
+
+    test('formatCurrency - zero', () => {
+      const result = formatCurrency(0);
+      assertEquals(result, '$0.00');
+    });
+
+    test('formatCurrency - negative amount', () => {
+      const result = formatCurrency(-50.25);
+      assertEquals(result, '-$50.25');
+    });
+
+    section('EDGE CASE TESTS');
+
+    test('Year boundary - December 2024 to January 2025', () => {
+      const lastWorkdayDec = getLastWorkdayOfMonth(2024, 11);
+      assertEquals(lastWorkdayDec.getDate(), 31);
+      assertEquals(lastWorkdayDec.getMonth(), 11);
+
+      const nextPayday = getNextPayday(new Date(2025, 0, 1));
+      assertEquals(nextPayday.getMonth(), 0);
+      assertEquals(nextPayday.getFullYear(), 2025);
+    });
+
+    test('Leap year February 2024', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 1);
+      assertEquals(lastWorkday.getDate(), 29, 'February 2024 has 29 days');
+    });
+
+    test('Non-leap year February 2025', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2025, 1);
+      assertEquals(lastWorkday.getDate(), 28, 'February 2025 has 28 days');
+    });
+
+    test('Veterans Day 2024 (falls on Monday)', () => {
+      assertTrue(isHoliday(new Date(2024, 10, 11)), 'Veterans Day should be recognized');
+      assertFalse(isWorkday(new Date(2024, 10, 11)), 'Veterans Day should not be a workday');
+    });
+
+    test('New Years Day 2025 (falls on Wednesday)', () => {
+      assertTrue(isHoliday(new Date(2025, 0, 1)), 'New Years Day should be recognized');
+      assertFalse(isWorkday(new Date(2025, 0, 1)), 'New Years Day should not be a workday');
+    });
+
+    test('getWeeksBetween - start after end returns empty', () => {
+      const start = new Date(2024, 5, 30);
+      const end = new Date(2024, 5, 15);
+      const weeks = getWeeksBetween(start, end);
+      assertEquals(weeks.length, 0, 'Should return empty array when start > end');
+    });
+
+    test('getNextPayday - on exactly the payday returns same day', () => {
+      const paydayDate = new Date(2024, 5, 28);
+      const nextPayday = getNextPayday(paydayDate);
+      assertEquals(nextPayday.getMonth(), 5, 'Should still be June');
+      assertEquals(nextPayday.getDate(), 28, 'Should be the 28th');
+    });
+
+    test('getLastWorkdayOfMonth - result is always a workday', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2024, 0);
+      assertTrue(isWorkday(lastWorkday), 'Last workday should actually be a workday');
+    });
+
+    test('Columbus Day 2024', () => {
+      const columbus = getNthWeekdayOfMonth(2024, 9, 1, 2);
+      assertEquals(columbus.getMonth(), 9, 'Month should be October');
+      assertEquals(columbus.getDate(), 14, 'Should be October 14');
+      assertEquals(columbus.getDay(), 1, 'Should be Monday');
+    });
+
+    test('Presidents Day 2024', () => {
+      const presidents = getNthWeekdayOfMonth(2024, 1, 1, 3);
+      assertEquals(presidents.getMonth(), 1, 'Month should be February');
+      assertEquals(presidents.getDate(), 19, 'Should be February 19');
+      assertEquals(presidents.getDay(), 1, 'Should be Monday');
+    });
+
+    section('POTENTIAL BUG: HOLIDAY ON LAST DAY OF MONTH');
+
+    // December 2025: Dec 31 falls on Wednesday, and New Year's Eve is NOT a federal holiday
+    // But what about December 2026?
+    test('December 2025 - Dec 31 is Wednesday (not a holiday)', () => {
+      const lastWorkday = getLastWorkdayOfMonth(2025, 11);
+      assertEquals(lastWorkday.getDate(), 31);
+      assertTrue(isWorkday(lastWorkday));
+    });
+
+    // Interesting edge case: What if Christmas falls near end of month?
+    // December 2026: Dec 25 is Friday, Dec 31 is Thursday
+    test('December 2026 - Christmas on Friday, Dec 31 Thursday', () => {
+      assertFalse(isWorkday(new Date(2026, 11, 25)), 'Christmas should not be workday');
+      const lastWorkday = getLastWorkdayOfMonth(2026, 11);
+      assertEquals(lastWorkday.getDate(), 31);
+    });
+
+    section('BUG HUNT: MUTATING DATE IN LOOPS');
+
+    // Test if getWeeksBetween mutates the passed date
+    test('getWeeksBetween should not mutate input dates', () => {
+      const start = new Date(2024, 5, 1);
+      const end = new Date(2024, 5, 28);
+      const originalStart = start.getTime();
+      const originalEnd = end.getTime();
+
+      getWeeksBetween(start, end);
+
+      // NOTE: This test may fail if the function mutates dates!
+      assertEquals(start.getTime(), originalStart, 'Start date should not be mutated');
+      assertEquals(end.getTime(), originalEnd, 'End date should not be mutated');
+    });
+
+    // ==================== SHOW SUMMARY ====================
+
+    const summary = document.createElement('div');
+    summary.className = 'summary';
+    summary.innerHTML = `<strong>RESULTS: ${passed} passed, ${failed} failed</strong>`;
+    results.insertBefore(summary, results.firstChild);
+
+    if (failures.length > 0) {
+      const bugReport = document.createElement('div');
+      bugReport.className = 'bug-report';
+      bugReport.innerHTML = `
+        <h3>FAILURES FOUND:</h3>
+        <ul>
+          ${failures.map(f => `<li><strong>${f.name}</strong>: ${f.error}</li>`).join('')}
+        </ul>
+      `;
+      results.insertBefore(bugReport, summary.nextSibling);
+    }
+  </script>
+</body>
+</html>
