@@ -209,7 +209,7 @@ Contributions are welcome! Please:
 
 ## License
 
-MIT License - feel free to use, modify, and distribute as you see fit.
+GPLv3 License - You're free to use, modify, and distribute this code, but any derivative works must also be open-sourced under GPLv3. See the LICENSE file for full terms.
 
 ## Acknowledgments
 
